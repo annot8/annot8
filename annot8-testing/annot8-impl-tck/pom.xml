@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <parent>
+    <artifactId>annot8-testing</artifactId>
+    <groupId>io.annot8</groupId>
+    <version>1.0.0</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+
+  <artifactId>annot8-impl-tck</artifactId>
+  <version>1.0.0</version>
+  <name>Annot8 Implementation TCK</name>
+  <description>Test Annot8 implementation behaviour</description>
+
+
+  <dependencies>
+    <dependency>
+      <groupId>io.annot8</groupId>
+      <artifactId>annot8-test-impl</artifactId>
+      <scope>compile</scope>
+    </dependency>
+
+    <!-- Override scope -->
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-api</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.assertj</groupId>
+      <artifactId>assertj-core</artifactId>
+      <scope>compile</scope>
+    </dependency>
+  </dependencies>
+</project>

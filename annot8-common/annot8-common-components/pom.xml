@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>annot8-common</artifactId>
+        <groupId>io.annot8</groupId>
+        <version>1.0.0</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>annot8-common-components</artifactId>
+    <version>1.0.0</version>
+    <name>Annot8 Common Components</name>
+    <description>Common functionality used to build components</description>
+
+    <dependencies>
+        <dependency>
+            <groupId>io.annot8</groupId>
+            <artifactId>annot8-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.micrometer</groupId>
+            <artifactId>micrometer-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.annot8</groupId>
+            <artifactId>annot8-common-data</artifactId>
+        </dependency>
+    </dependencies>
+
+</project>

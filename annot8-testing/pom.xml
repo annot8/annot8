@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="http://maven.apache.org/POM/4.0.0"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>io.annot8</groupId>
+    <artifactId>annot8-parent</artifactId>
+    <version>1.0.0</version>
+  </parent>
+
+  <artifactId>annot8-testing</artifactId>
+  <version>1.0.0</version>
+  <packaging>pom</packaging>
+
+  <name>Annot8 Testing</name>
+  <description>Projects for testing Annot8 components</description>
+
+  <issueManagement>
+    <url>https://github.com/annot8/testing/issues</url>
+    <system>GitHub Issues</system>
+  </issueManagement>
+
+  <scm>
+    <url>https://github.com/annot8/testing/</url>
+    <connection>scm:git:git://github.com/annot8/testing.git</connection>
+    <developerConnection>scm:git:git@github.com/annot8/testing.git</developerConnection>
+  </scm>
+
+  <modules>
+    <module>annot8-test-impl</module>
+    <module>annot8-impl-tck</module>
+  </modules>
+</project>

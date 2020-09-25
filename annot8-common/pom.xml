@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="http://maven.apache.org/POM/4.0.0"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>io.annot8</groupId>
+    <artifactId>annot8-parent</artifactId>
+    <version>1.0.0</version>
+  </parent>
+
+  <artifactId>annot8-common</artifactId>
+  <version>1.0.0</version>
+  <packaging>pom</packaging>
+
+  <name>Annot8 Common</name>
+  <description>Common functionality used by Annot8 components</description>
+
+  <modules>
+    <module>annot8-common-components</module>
+    <module>annot8-common-data</module>
+    <module>annot8-common-processing</module>
+    <module>annot8-common-serialization</module>
+    <module>annot8-common-utils</module>
+  </modules>
+</project>

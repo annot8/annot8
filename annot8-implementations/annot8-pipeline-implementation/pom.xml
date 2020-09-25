@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <parent>
+    <artifactId>annot8-implementations</artifactId>
+    <groupId>io.annot8</groupId>
+    <version>1.0.0</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+
+  <artifactId>annot8-pipeline-implementation</artifactId>
+  <version>1.0.0</version>
+  <name>Annot8 Pipeline Implementation</name>
+  <description>Classes for working with pipelines of components</description>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.annot8</groupId>
+      <artifactId>annot8-api</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>io.annot8</groupId>
+      <artifactId>annot8-common-components</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>io.annot8</groupId>
+      <artifactId>annot8-implementations-support</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-simple</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+</project>
