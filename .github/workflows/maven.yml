@@ -20,7 +20,6 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 11
-    - name: Build with Maven
     - run: mvn -B speedy-spotless:check
     - run: mvn -B clean org.jacoco:jacoco-maven-plugin:prepare-agent package
     - run: mvn -B jacoco:report 
