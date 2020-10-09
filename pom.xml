@@ -6,7 +6,7 @@
 
   <groupId>io.annot8</groupId>
   <artifactId>annot8-parent</artifactId>
-  <version>1.0.0</version>
+  <version>1.0.1</version>
   <packaging>pom</packaging>
 
   <name>Annot8 Parent</name>
@@ -257,57 +257,57 @@
       <dependency>
         <groupId>io.annot8</groupId>
         <artifactId>annot8-common-components</artifactId>
-        <version>1.0.0</version>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>io.annot8</groupId>
         <artifactId>annot8-common-data</artifactId>
-        <version>1.0.0</version>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>io.annot8</groupId>
         <artifactId>annot8-common-processors</artifactId>
-        <version>1.0.0</version>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>io.annot8</groupId>
         <artifactId>annot8-common-serialization</artifactId>
-        <version>1.0.0</version>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>io.annot8</groupId>
         <artifactId>annot8-common-utils</artifactId>
-        <version>1.0.0</version>
+        <version>${project.version}</version>
       </dependency>
 
       <!-- Implementations-->
       <dependency>
         <groupId>io.annot8</groupId>
         <artifactId>annot8-implementations-support</artifactId>
-        <version>1.0.0</version>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>io.annot8</groupId>
         <artifactId>annot8-reference-implementation</artifactId>
-        <version>1.0.0</version>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>io.annot8</groupId>
         <artifactId>annot8-pipelines-implemenation</artifactId>
-        <version>1.0.0</version>
+        <version>${project.version}</version>
       </dependency>
 
       <!-- Testing -->
       <dependency>
         <groupId>io.annot8</groupId>
         <artifactId>annot8-test-impl</artifactId>
-        <version>1.0.0</version>
+        <version>${project.version}</version>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>io.annot8</groupId>
         <artifactId>annot8-impl-tck</artifactId>
-        <version>1.0.0</version>
+        <version>${project.version}</version>
         <scope>test</scope>
       </dependency>
 
