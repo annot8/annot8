@@ -7,11 +7,10 @@
   <parent>
     <groupId>io.annot8</groupId>
     <artifactId>annot8-parent</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
   </parent>
 
   <artifactId>annot8-testing</artifactId>
-  <version>1.0.0</version>
   <packaging>pom</packaging>
 
   <name>Annot8 Testing</name>

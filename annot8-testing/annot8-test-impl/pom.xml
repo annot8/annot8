@@ -7,11 +7,10 @@
   <parent>
     <groupId>io.annot8</groupId>
     <artifactId>annot8-testing</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
   </parent>
 
   <artifactId>annot8-test-impl</artifactId>
-  <version>1.0.1</version>
   <name>Annot8 Test Implementation</name>
   <description>Implementation of core classes useful for unit testing</description>
 

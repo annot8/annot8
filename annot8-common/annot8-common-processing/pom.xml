@@ -5,12 +5,11 @@
     <parent>
         <artifactId>annot8-common</artifactId>
         <groupId>io.annot8</groupId>
-        <version>1.0.0</version>
+        <version>1.0.1</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>annot8-common-processing</artifactId>
-    <version>1.0.0</version>
     <name>Annot8 Common Processing</name>
     <description>Supporting functions for processing</description>
 
