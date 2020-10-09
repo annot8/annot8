@@ -185,7 +185,7 @@ public class TestItem implements Item {
 
   @Override
   public Item createChild() {
-    return itemFactory == null ? null : itemFactory.create(item);
+    return itemFactory == null ? null : itemFactory.create(this);
   }
 
   public ItemFactory getItemFactory() {
