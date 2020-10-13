@@ -1,8 +1,9 @@
 /* Annot8 (annot8.io) - Licensed under Apache-2.0. */
-package io.annot8.implementations.support.stores;
+package io.annot8.implementations.support.factories;
 
 import io.annot8.api.data.Item;
 import io.annot8.api.data.ItemFactory;
+import io.annot8.implementations.support.data.NotifyingItem;
 import io.annot8.implementations.support.listeners.Deregister;
 import io.annot8.implementations.support.listeners.Listenable;
 import io.annot8.implementations.support.listeners.Listeners;
@@ -27,14 +28,14 @@ public class NotifyingItemFactory implements ItemFactory, Listenable<Consumer<It
 
   @Override
   public Item create() {
-    Item item = itemFactory.create();
+    Item item = new NotifyingItem(itemFactory.create(), this);
     listeners.fire(item);
     return item;
   }
 
   @Override
   public Item create(Item parent) {
-    Item item = itemFactory.create(parent);
+    Item item = new NotifyingItem(itemFactory.create(parent), this);
     listeners.fire(item);
     return item;
   }

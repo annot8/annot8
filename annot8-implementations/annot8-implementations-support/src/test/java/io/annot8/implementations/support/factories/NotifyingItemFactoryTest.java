@@ -1,11 +1,12 @@
 /* Annot8 (annot8.io) - Licensed under Apache-2.0. */
-package io.annot8.implementations.support.stores;
+package io.annot8.implementations.support.factories;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 import io.annot8.api.data.Item;
 import io.annot8.api.data.ItemFactory;
+import io.annot8.implementations.support.data.NotifyingItem;
 import io.annot8.implementations.support.listeners.Deregister;
 import java.util.LinkedList;
 import java.util.List;
@@ -41,10 +42,10 @@ class NotifyingItemFactoryTest {
     when(delegateItemFactory.create()).thenReturn(itemWithoutParent);
 
     List<Item> items = new LinkedList<>();
-    itemFactory.register(items::add);
+    itemFactory.register(i -> items.add(((NotifyingItem) i).getOriginalItem()));
     final Item item = itemFactory.create();
 
-    assertThat(item).isEqualTo(itemWithoutParent);
+    assertThat(((NotifyingItem) item).getOriginalItem()).isEqualTo(itemWithoutParent);
     Assertions.assertThat(items).containsExactly(itemWithoutParent);
   }
 
@@ -53,10 +54,10 @@ class NotifyingItemFactoryTest {
     when(delegateItemFactory.create(Mockito.any(Item.class))).thenReturn(itemWithParent);
 
     List<Item> items = new LinkedList<>();
-    itemFactory.register(items::add);
+    itemFactory.register(i -> items.add(((NotifyingItem) i).getOriginalItem()));
     final Item item = itemFactory.create(itemWithoutParent);
 
-    assertThat(item).isEqualTo(itemWithParent);
+    assertThat(((NotifyingItem) item).getOriginalItem()).isEqualTo(itemWithParent);
     Assertions.assertThat(items).containsExactly(itemWithParent);
   }
 
@@ -75,7 +76,7 @@ class NotifyingItemFactoryTest {
 
     final Item item = itemFactory.create(itemWithoutParent);
 
-    assertThat(item).isEqualTo(itemWithParent);
+    assertThat(((NotifyingItem) item).getOriginalItem()).isEqualTo(itemWithParent);
     Assertions.assertThat(items).isEmpty();
   }
 }

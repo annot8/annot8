@@ -1,5 +1,5 @@
 /* Annot8 (annot8.io) - Licensed under Apache-2.0. */
-package io.annot8.implementations.support.stores;
+package io.annot8.implementations.support.factories;
 
 import io.annot8.api.data.Item;
 import io.annot8.api.data.ItemFactory;

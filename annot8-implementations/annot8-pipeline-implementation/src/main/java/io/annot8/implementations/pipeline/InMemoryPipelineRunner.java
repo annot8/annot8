@@ -11,7 +11,7 @@ import io.annot8.common.components.logging.Logging;
 import io.annot8.common.components.metering.Metering;
 import io.annot8.common.components.metering.Metrics;
 import io.annot8.common.components.metering.NoOpMetrics;
-import io.annot8.implementations.support.stores.QueueItemFactory;
+import io.annot8.implementations.support.factories.QueueItemFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
