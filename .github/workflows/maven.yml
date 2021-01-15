@@ -23,7 +23,7 @@ jobs:
     - run: mvn -B speedy-spotless:check
     - run: mvn -B clean org.jacoco:jacoco-maven-plugin:prepare-agent package
     - run: mvn -B jacoco:report 
-    - run: mvn -B sonar:sonar -Dsonar.projectKey=annot8_annot8 -Dsonar.organization=annot8 -Dsonar.host.url=https://sonarcloud.io
+    - run: mvn -B sonar:sonar -Dsonar.login=${{ secrets.SONAR_TOKEN }} -Dsonar.projectKey=annot8_annot8 -Dsonar.organization=annot8 -Dsonar.host.url=https://sonarcloud.io
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }} 
