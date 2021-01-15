@@ -7,7 +7,7 @@
   <parent>
     <groupId>io.annot8</groupId>
     <artifactId>annot8-implementations</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
   </parent>
 
   <artifactId>annot8-implementations-support</artifactId>
