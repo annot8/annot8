@@ -35,7 +35,7 @@ public final class Metering implements Resource {
   }
 
   public Metrics getMetrics(Class<? extends Annot8Component> clazz) {
-    return getMetrics(clazz.getSimpleName());
+    return getMetrics(clazz.getName());
   }
 
   public Metrics getMetrics(String name) {
