@@ -17,8 +17,14 @@ import io.annot8.api.settings.NoSettings;
 import io.annot8.api.settings.Settings;
 import io.annot8.common.components.logging.Logging;
 import io.annot8.common.components.metering.Metering;
+import io.annot8.common.components.metering.Metrics;
+import io.annot8.common.components.metering.NoOpMetrics;
 import io.annot8.implementations.support.context.SimpleContext;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,6 +36,9 @@ public class SimplePipeline implements Pipeline {
   private final Collection<Processor> processors;
   private final Context context;
   private final Logger logger;
+  private final Metrics metrics;
+
+  private int sourceIndex = 0;
 
   private SimplePipeline(
       Context context,
@@ -48,6 +57,12 @@ public class SimplePipeline implements Pipeline {
             .getResource(Logging.class)
             .map(l -> l.getLogger(InMemoryPipelineRunner.class))
             .orElse(LoggerFactory.getLogger(InMemoryPipelineRunner.class));
+
+    this.metrics =
+        this.getContext()
+            .getResource(Metering.class)
+            .map(value -> value.getMetrics("pipeline"))
+            .orElseGet(NoOpMetrics::instance);
   }
 
   public String getName() {
@@ -79,27 +94,46 @@ public class SimplePipeline implements Pipeline {
 
     Source source = optional.get();
 
-    logger.debug("[{}] Reading source {} for new items", getName(), source.toString());
-    SourceResponse response = source.read(itemFactory);
+    logger.debug(
+        "[{}] Reading source {} [{}] for new items", getName(), source.toString(), sourceIndex);
+    SourceResponse response =
+        metrics
+            .timer("source[" + sourceIndex + "].readTime")
+            .record(() -> source.read(itemFactory));
 
     switch (response.getStatus()) {
       case DONE:
-        logger.info("[{}] Finished reading all items from source {}", getName(), source.toString());
+        metrics.counter("source[" + sourceIndex + "].done").increment();
+        logger.info(
+            "[{}] Finished reading all items from source {} [{}]",
+            getName(),
+            source.toString(),
+            sourceIndex);
+
         remove(source);
+
         // Move onto the next source
         return read(itemFactory);
       case SOURCE_ERROR:
+        metrics.counter("source[" + sourceIndex + "].sourceError").increment();
         logger.error(
-            "[{}] Source {} returned a non-recoverable error and has been removed from the pipeline",
+            "[{}] Source {} [{}] returned a non-recoverable error and has been removed from the pipeline",
             getName(),
-            source.toString());
+            source.toString(),
+            sourceIndex);
+
         if (response.hasExceptions()) {
           for (Exception e : response.getExceptions()) {
             logger.error("The following exception was caught by the source", e);
           }
         }
         remove(source);
+
         return response;
+      case OK:
+        metrics.counter("source[" + sourceIndex + "].ok").increment();
+
+        // Don't record metrics for EMPTY
     }
 
     return response;
@@ -112,32 +146,42 @@ public class SimplePipeline implements Pipeline {
 
     ProcessorResponse response = ProcessorResponse.ok();
 
+    int idx = 0;
     for (Processor processor : getProcessors()) {
-
       logger.debug(
-          "[{}] Processing item {} using processor {}",
+          "[{}] Processing item {} using processor {} [{}]",
           getName(),
           item.getId(),
-          processor.toString());
-      response = processor.process(item);
+          processor.toString(),
+          idx);
+
+      response =
+          metrics
+              .timer("processor[" + idx + "].processingTime")
+              .record(() -> processor.process(item));
 
       if (response.getStatus() == ProcessorResponse.Status.ITEM_ERROR) {
+        metrics.counter("processor[" + idx + "].itemError").increment();
         logger.error(
-            "[{}] Processor {} returned an error whilst processing the current item {}, and the item will not be processed by the remainder of the pipeline",
+            "[{}] Processor {} [{}] returned an error whilst processing the current item {}, and the item will not be processed by the remainder of the pipeline",
             getName(),
             processor.toString(),
+            idx,
             item.getId());
         if (response.hasExceptions()) {
           for (Exception e : response.getExceptions()) {
             logger.error("The following exception was caught by the processor", e);
           }
         }
+
         break;
       } else if (response.getStatus() == ProcessorResponse.Status.PROCESSOR_ERROR) {
+        metrics.counter("processor[" + idx + "].processorError").increment();
         logger.error(
-            "[{}] Processor {} returned a non-recoverable error whilst processing the current item {}, and the processor has been removed from the pipeline",
+            "[{}] Processor {} [{}] returned a non-recoverable error whilst processing the current item {}, and the processor has been removed from the pipeline",
             getName(),
             processor.toString(),
+            idx,
             item.getId());
         if (response.hasExceptions()) {
           for (Exception e : response.getExceptions()) {
@@ -146,7 +190,11 @@ public class SimplePipeline implements Pipeline {
         }
 
         erroring.add(processor);
+      } else {
+        metrics.counter("processor[" + idx + "].ok").increment();
       }
+
+      idx++;
     }
 
     // Actually remove all the processors which errored
@@ -160,6 +208,7 @@ public class SimplePipeline implements Pipeline {
   }
 
   protected void remove(Source source) {
+    sourceIndex++;
     sources.remove(source);
   }
 
