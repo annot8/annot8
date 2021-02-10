@@ -98,12 +98,14 @@ public class SimplePipeline implements Pipeline {
         "[{}] Reading source {} [{}] for new items", getName(), source.toString(), sourceIndex);
     SourceResponse response =
         metrics
-            .timer("source[" + sourceIndex + "].readTime")
+            .timer("source[" + sourceIndex + "].readTime", "class", source.getClass().getName())
             .record(() -> source.read(itemFactory));
 
     switch (response.getStatus()) {
       case DONE:
-        metrics.counter("source[" + sourceIndex + "].done").increment();
+        metrics
+            .counter("source[" + sourceIndex + "].done", "class", source.getClass().getName())
+            .increment();
         logger.info(
             "[{}] Finished reading all items from source {} [{}]",
             getName(),
@@ -115,7 +117,10 @@ public class SimplePipeline implements Pipeline {
         // Move onto the next source
         return read(itemFactory);
       case SOURCE_ERROR:
-        metrics.counter("source[" + sourceIndex + "].sourceError").increment();
+        metrics
+            .counter(
+                "source[" + sourceIndex + "].sourceError", "class", source.getClass().getName())
+            .increment();
         logger.error(
             "[{}] Source {} [{}] returned a non-recoverable error and has been removed from the pipeline",
             getName(),
@@ -131,7 +136,9 @@ public class SimplePipeline implements Pipeline {
 
         return response;
       case OK:
-        metrics.counter("source[" + sourceIndex + "].ok").increment();
+        metrics
+            .counter("source[" + sourceIndex + "].ok", "class", source.getClass().getName())
+            .increment();
 
         // Don't record metrics for EMPTY
     }
@@ -157,11 +164,14 @@ public class SimplePipeline implements Pipeline {
 
       response =
           metrics
-              .timer("processor[" + idx + "].processingTime")
+              .timer(
+                  "processor[" + idx + "].processingTime", "class", processor.getClass().getName())
               .record(() -> processor.process(item));
 
       if (response.getStatus() == ProcessorResponse.Status.ITEM_ERROR) {
-        metrics.counter("processor[" + idx + "].itemError").increment();
+        metrics
+            .counter("processor[" + idx + "].itemError", "class", processor.getClass().getName())
+            .increment();
         logger.error(
             "[{}] Processor {} [{}] returned an error whilst processing the current item {}, and the item will not be processed by the remainder of the pipeline",
             getName(),
@@ -176,7 +186,10 @@ public class SimplePipeline implements Pipeline {
 
         break;
       } else if (response.getStatus() == ProcessorResponse.Status.PROCESSOR_ERROR) {
-        metrics.counter("processor[" + idx + "].processorError").increment();
+        metrics
+            .counter(
+                "processor[" + idx + "].processorError", "class", processor.getClass().getName())
+            .increment();
         logger.error(
             "[{}] Processor {} [{}] returned a non-recoverable error whilst processing the current item {}, and the processor has been removed from the pipeline",
             getName(),
@@ -191,7 +204,9 @@ public class SimplePipeline implements Pipeline {
 
         erroring.add(processor);
       } else {
-        metrics.counter("processor[" + idx + "].ok").increment();
+        metrics
+            .counter("processor[" + idx + "].ok", "class", processor.getClass().getName())
+            .increment();
       }
 
       idx++;
