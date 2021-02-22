@@ -1,8 +1,10 @@
 /* Annot8 (annot8.io) - Licensed under Apache-2.0. */
 package io.annot8.implementations.pipeline;
 
+import io.annot8.api.components.responses.ProcessorResponse;
 import io.annot8.api.components.responses.SourceResponse;
 import io.annot8.api.context.Context;
+import io.annot8.api.data.Item;
 import io.annot8.api.data.ItemFactory;
 import io.annot8.api.pipelines.Pipeline;
 import io.annot8.api.pipelines.PipelineDescriptor;
@@ -14,6 +16,8 @@ import io.annot8.common.components.metering.NoOpMetrics;
 import io.annot8.implementations.support.factories.QueueItemFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Optional;
 
 public class InMemoryPipelineRunner implements PipelineRunner {
 
@@ -91,10 +95,23 @@ public class InMemoryPipelineRunner implements PipelineRunner {
       SourceResponse sr = pipeline.read(itemFactory);
 
       while (running && !itemFactory.isEmpty()) {
-        metrics
+        Optional<Item> optItem = itemFactory.next();
+
+        if(optItem.isPresent()){
+          ProcessorResponse response = metrics
             .timer("itemProcessingTime")
-            .record(() -> itemFactory.next().ifPresent(pipeline::process));
-        metrics.counter("itemsProcessed").increment();
+            .record(() -> pipeline.process(optItem.get()));
+
+          metrics.counter("itemsProcessed").increment();
+
+          if(response.getStatus().equals(ProcessorResponse.Status.OK)) {
+            metrics.counter("itemsProcessed.ok").increment();
+          }else if(response.getStatus().equals(ProcessorResponse.Status.PROCESSOR_ERROR)) {
+            metrics.counter("itemsProcessed.processorError").increment();
+          }else if(response.getStatus().equals(ProcessorResponse.Status.ITEM_ERROR)) {
+            metrics.counter("itemsProcessed.itemError").increment();
+          }
+        }
       }
 
       // If we are done, then we stop
