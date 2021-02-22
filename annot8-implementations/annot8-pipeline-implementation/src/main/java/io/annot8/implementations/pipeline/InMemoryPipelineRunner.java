@@ -97,18 +97,17 @@ public class InMemoryPipelineRunner implements PipelineRunner {
       while (running && !itemFactory.isEmpty()) {
         Optional<Item> optItem = itemFactory.next();
 
-        if(optItem.isPresent()){
-          ProcessorResponse response = metrics
-            .timer("itemProcessingTime")
-            .record(() -> pipeline.process(optItem.get()));
+        if (optItem.isPresent()) {
+          ProcessorResponse response =
+              metrics.timer("itemProcessingTime").record(() -> pipeline.process(optItem.get()));
 
           metrics.counter("itemsProcessed").increment();
 
-          if(response.getStatus().equals(ProcessorResponse.Status.OK)) {
+          if (response.getStatus().equals(ProcessorResponse.Status.OK)) {
             metrics.counter("itemsProcessed.ok").increment();
-          }else if(response.getStatus().equals(ProcessorResponse.Status.PROCESSOR_ERROR)) {
+          } else if (response.getStatus().equals(ProcessorResponse.Status.PROCESSOR_ERROR)) {
             metrics.counter("itemsProcessed.processorError").increment();
-          }else if(response.getStatus().equals(ProcessorResponse.Status.ITEM_ERROR)) {
+          } else if (response.getStatus().equals(ProcessorResponse.Status.ITEM_ERROR)) {
             metrics.counter("itemsProcessed.itemError").increment();
           }
         }
