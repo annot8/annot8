@@ -14,10 +14,9 @@ import io.annot8.common.components.metering.Metering;
 import io.annot8.common.components.metering.Metrics;
 import io.annot8.common.components.metering.NoOpMetrics;
 import io.annot8.implementations.support.factories.QueueItemFactory;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Optional;
 
 public class InMemoryPipelineRunner implements PipelineRunner {
 
