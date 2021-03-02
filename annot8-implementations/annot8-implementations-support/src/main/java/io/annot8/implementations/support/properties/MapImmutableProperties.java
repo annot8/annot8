@@ -10,15 +10,15 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Implementation of ImmutableProperties interface using an in-memory HashMap to store the
- * properties.
+ * Implementation of ImmutableProperties interface using an in-memory Map to store the properties.
  */
 public class MapImmutableProperties implements ImmutableProperties {
 
   private final Map<String, Object> properties;
 
   private MapImmutableProperties(Map<String, Object> properties) {
-    this.properties = properties;
+    // Copy map to ensure we get something immutable
+    this.properties = Map.copyOf(properties);
   }
 
   @Override
