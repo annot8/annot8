@@ -73,7 +73,7 @@
 
     <!-- Testing -->
     <junit.version>5.7.1</junit.version>
-    <mockito.version>3.7.7</mockito.version>
+    <mockito.version>3.8.0</mockito.version>
     <assertj-core.version>3.19.0</assertj-core.version>
     <assertj-guava.version>3.4.0</assertj-guava.version>
     <yasson.version>1.0.7</yasson.version> <!-- Note 1.0.8 causes deserialization to fail in some instances -->
