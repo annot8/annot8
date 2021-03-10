@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
 
 public class InMemoryPipelineRunner implements PipelineRunner {
 
-  private static final long DEFAULT_DELAY = 1000;
+  private static final long DEFAULT_DELAY = 0;
 
   private final Pipeline pipeline;
   private final Logger logger;
@@ -87,7 +87,10 @@ public class InMemoryPipelineRunner implements PipelineRunner {
     running = true;
 
     Long startTime =
-        metrics.gauge("runTime", System.currentTimeMillis(), t -> System.currentTimeMillis() - t);
+        metrics.gauge(
+            "runTime",
+            System.currentTimeMillis(),
+            t -> (System.currentTimeMillis() - t) / 1000.0); // Convert from milliseconds to seconds
     logger.debug("Pipeline {} started at {}", pipeline.getName(), startTime);
 
     while (running) {
@@ -98,7 +101,9 @@ public class InMemoryPipelineRunner implements PipelineRunner {
 
         if (optItem.isPresent()) {
           ProcessorResponse response =
-              metrics.timer("itemProcessingTime").record(() -> pipeline.process(optItem.get()));
+              metrics
+                  .timer("itemProcessingTime")
+                  .record(() -> pipeline.process(optItem.get())); // Gives time in seconds
 
           metrics.counter("itemsProcessed").increment();
 
