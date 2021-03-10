@@ -29,6 +29,7 @@ public class InMemoryPipelineRunner implements PipelineRunner {
   private final long delay;
 
   private boolean running = true;
+  private long pipelineFinished = -1;
 
   public InMemoryPipelineRunner(Pipeline pipeline, ItemFactory itemFactory) {
     this(pipeline, itemFactory, DEFAULT_DELAY);
@@ -88,9 +89,16 @@ public class InMemoryPipelineRunner implements PipelineRunner {
 
     Long startTime =
         metrics.gauge(
-            "runTime",
+            "runTime", // Convert from milliseconds to seconds
             System.currentTimeMillis(),
-            t -> (System.currentTimeMillis() - t) / 1000.0); // Convert from milliseconds to seconds
+            t -> {
+              if (running) {
+                return (System.currentTimeMillis() - t) / 1000.0;
+              } else {
+                // Once the pipeline has finished, don't continue to increment the runTime
+                return (pipelineFinished - t) / 1000.0;
+              }
+            });
     logger.debug("Pipeline {} started at {}", pipeline.getName(), startTime);
 
     while (running) {
@@ -131,15 +139,20 @@ public class InMemoryPipelineRunner implements PipelineRunner {
       }
     }
 
-    logger.debug("Pipeline {} finished at {}", pipeline.getName(), startTime);
+    pipelineFinished = System.currentTimeMillis();
+    logger.debug("Pipeline {} finished at {}", pipeline.getName(), pipelineFinished);
     logger.info(
         "Pipeline {} ran for {} seconds",
         pipeline.getName(),
-        (System.currentTimeMillis() - startTime) / 1000.0);
+        (pipelineFinished - startTime) / 1000.0);
   }
 
   public void stop() {
     logger.info("Stopping pipeline after current item/source");
     running = false;
+  }
+
+  public boolean isRunning() {
+    return running;
   }
 }
