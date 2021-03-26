@@ -3,11 +3,11 @@ package io.annot8.testing.testimpl;
 
 import io.annot8.api.bounds.Bounds;
 import io.annot8.api.data.Content;
+import jakarta.json.bind.annotation.JsonbCreator;
+import jakarta.json.bind.annotation.JsonbProperty;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
-import javax.json.bind.annotation.JsonbCreator;
-import javax.json.bind.annotation.JsonbProperty;
 
 /**
  * Test Bounds

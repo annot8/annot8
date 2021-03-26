@@ -3,9 +3,9 @@ package io.annot8.common.components.capabilities;
 
 import io.annot8.api.capabilities.ContentCapability;
 import io.annot8.api.data.Content;
+import jakarta.json.bind.annotation.JsonbCreator;
+import jakarta.json.bind.annotation.JsonbProperty;
 import java.util.Objects;
-import javax.json.bind.annotation.JsonbCreator;
-import javax.json.bind.annotation.JsonbProperty;
 
 public class SimpleContentCapability implements ContentCapability {
 

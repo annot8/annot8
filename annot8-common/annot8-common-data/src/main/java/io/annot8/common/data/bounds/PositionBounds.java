@@ -4,11 +4,11 @@ package io.annot8.common.data.bounds;
 import io.annot8.api.bounds.Bounds;
 import io.annot8.api.data.Content;
 import io.annot8.api.exceptions.InvalidBoundsException;
+import jakarta.json.bind.annotation.JsonbCreator;
+import jakarta.json.bind.annotation.JsonbProperty;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import javax.json.bind.annotation.JsonbCreator;
-import javax.json.bind.annotation.JsonbProperty;
 
 /**
  * A position marker within a content.

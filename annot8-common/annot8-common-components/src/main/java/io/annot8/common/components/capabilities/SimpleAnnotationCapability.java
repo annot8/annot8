@@ -3,9 +3,9 @@ package io.annot8.common.components.capabilities;
 
 import io.annot8.api.bounds.Bounds;
 import io.annot8.api.capabilities.AnnotationCapability;
+import jakarta.json.bind.annotation.JsonbCreator;
+import jakarta.json.bind.annotation.JsonbProperty;
 import java.util.Objects;
-import javax.json.bind.annotation.JsonbCreator;
-import javax.json.bind.annotation.JsonbProperty;
 
 public class SimpleAnnotationCapability implements AnnotationCapability {
 

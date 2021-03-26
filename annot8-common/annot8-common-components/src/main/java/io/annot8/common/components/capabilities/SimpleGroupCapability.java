@@ -2,9 +2,9 @@
 package io.annot8.common.components.capabilities;
 
 import io.annot8.api.capabilities.GroupCapability;
+import jakarta.json.bind.annotation.JsonbCreator;
+import jakarta.json.bind.annotation.JsonbProperty;
 import java.util.Objects;
-import javax.json.bind.annotation.JsonbCreator;
-import javax.json.bind.annotation.JsonbProperty;
 
 public class SimpleGroupCapability implements GroupCapability {
   private final String type;

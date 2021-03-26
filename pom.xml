@@ -63,8 +63,7 @@
     <annot8.version>1.0</annot8.version>
 
     <!-- Core utitities and helpers -->
-    <jsonb.version>1.0</jsonb.version>
-    <jsonapi.version>1.1.4</jsonapi.version>
+    <jsonapi.version>2.0.0</jsonapi.version>
     <lombok.version>1.18.18</lombok.version>
     <guava.version>30.1.1-jre</guava.version>
     <slf4j.version>1.7.30</slf4j.version>
@@ -76,7 +75,7 @@
     <mockito.version>3.8.0</mockito.version>
     <assertj-core.version>3.19.0</assertj-core.version>
     <assertj-guava.version>3.4.0</assertj-guava.version>
-    <yasson.version>1.0.7</yasson.version> <!-- Note 1.0.8 causes deserialization to fail in some instances -->
+    <yasson.version>2.0.2</yasson.version>
 
     <!-- Plugins -->
     <maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
@@ -94,13 +93,12 @@
 
   <dependencies>
     <dependency>
-      <groupId>javax.json</groupId>
-      <artifactId>javax.json-api</artifactId>
+      <groupId>jakarta.json</groupId>
+      <artifactId>jakarta.json-api</artifactId>
     </dependency>
-
     <dependency>
-      <groupId>javax.json.bind</groupId>
-      <artifactId>javax.json.bind-api</artifactId>
+      <groupId>jakarta.json.bind</groupId>
+      <artifactId>jakarta.json.bind-api</artifactId>
     </dependency>
 
     <!-- Test dependencies for all projects -->
@@ -314,14 +312,14 @@
 
       <!-- JSON -->
       <dependency>
-        <groupId>javax.json</groupId>
-        <artifactId>javax.json-api</artifactId>
+        <groupId>jakarta.json</groupId>
+        <artifactId>jakarta.json-api</artifactId>
         <version>${jsonapi.version}</version>
       </dependency>
       <dependency>
-        <groupId>javax.json.bind</groupId>
-        <artifactId>javax.json.bind-api</artifactId>
-        <version>${jsonb.version}</version>
+        <groupId>jakarta.json.bind</groupId>
+        <artifactId>jakarta.json.bind-api</artifactId>
+        <version>${jsonapi.version}</version>
       </dependency>
       <dependency>
         <groupId>org.eclipse</groupId>
