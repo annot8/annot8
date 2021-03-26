@@ -17,7 +17,7 @@ public class Annot8ComponentDescriptorSerializer
     generator.writeStartObject(descriptor.getClass().getName());
     generator.write("name", descriptor.getName());
     ctx.serialize("settings", descriptor.getSettings(), generator);
-    // TODO: Use reflection to loop through properties rather than hard code
+
     generator.writeEnd();
     generator.writeEnd();
   }
