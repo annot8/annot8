@@ -38,6 +38,8 @@ public class SimplePipeline implements Pipeline {
   private final Logger logger;
   private final Metrics metrics;
 
+  private final ErrorConfiguration errorConfiguration;
+
   private int sourceIndex = 0;
 
   private SimplePipeline(
@@ -45,12 +47,14 @@ public class SimplePipeline implements Pipeline {
       String name,
       String description,
       Collection<Source> sources,
-      Collection<Processor> processors) {
+      Collection<Processor> processors,
+      ErrorConfiguration errorConfiguration) {
     this.name = name;
     this.description = description;
     this.sources = sources;
     this.processors = processors;
     this.context = context;
+    this.errorConfiguration = errorConfiguration;
 
     this.logger =
         this.getContext()
@@ -121,18 +125,30 @@ public class SimplePipeline implements Pipeline {
             .counter(
                 "source[" + sourceIndex + "].sourceError", "class", source.getClass().getName())
             .increment();
-        logger.error(
-            "[{}] Source {} [{}] returned a non-recoverable error and has been removed from the pipeline",
-            getName(),
-            source.toString(),
-            sourceIndex);
+
+        switch (errorConfiguration.getOnSourceError()) {
+          case IGNORE:
+            logger.error(
+                "[{}] Source {} [{}] returned an error, which has been ignored",
+                getName(),
+                source.toString(),
+                sourceIndex);
+            break;
+          case REMOVE_SOURCE:
+            logger.error(
+                "[{}] Source {} [{}] returned an error and will be removed from the pipeline",
+                getName(),
+                source.toString(),
+                sourceIndex);
+            remove(source);
+            break;
+        }
 
         if (response.hasExceptions()) {
           for (Exception e : response.getExceptions()) {
             logger.error("The following exception was caught by the source", e);
           }
         }
-        remove(source);
 
         return response;
       case OK:
@@ -172,37 +188,73 @@ public class SimplePipeline implements Pipeline {
         metrics
             .counter("processor[" + idx + "].itemError", "class", processor.getClass().getName())
             .increment();
-        logger.error(
-            "[{}] Processor {} [{}] returned an error whilst processing the current item {}, and the item will not be processed by the remainder of the pipeline",
-            getName(),
-            processor.toString(),
-            idx,
-            item.getId());
+
+        if (errorConfiguration.getOnItemError() == OnProcessingError.IGNORE) {
+          logger.error(
+              "[{}] Processor {} [{}] returned an item error whilst processing the current item {}, which has been ignored",
+              getName(),
+              processor.toString(),
+              idx,
+              item.getId());
+        } else if (errorConfiguration.getOnItemError() == OnProcessingError.DISCARD_ITEM) {
+          logger.error(
+              "[{}] Processor {} [{}] returned an item error whilst processing the current item {}, and the item will not be processed by the remainder of the pipeline",
+              getName(),
+              processor.toString(),
+              idx,
+              item.getId());
+          break;
+        } else if (errorConfiguration.getOnItemError() == OnProcessingError.REMOVE_PROCESSOR) {
+          logger.error(
+              "[{}] Processor {} [{}] returned an item error whilst processing the current item {}, and the processor will be removed from the pipeline",
+              getName(),
+              processor.toString(),
+              idx,
+              item.getId());
+          erroring.add(processor);
+        }
+
         if (response.hasExceptions()) {
           for (Exception e : response.getExceptions()) {
             logger.error("The following exception was caught by the processor", e);
           }
         }
-
-        break;
       } else if (response.getStatus() == ProcessorResponse.Status.PROCESSOR_ERROR) {
         metrics
             .counter(
                 "processor[" + idx + "].processorError", "class", processor.getClass().getName())
             .increment();
-        logger.error(
-            "[{}] Processor {} [{}] returned a non-recoverable error whilst processing the current item {}, and the processor has been removed from the pipeline",
-            getName(),
-            processor.toString(),
-            idx,
-            item.getId());
+
+        if (errorConfiguration.getOnProcessorError() == OnProcessingError.IGNORE) {
+          logger.error(
+              "[{}] Processor {} [{}] returned a processor error whilst processing the current item {}, which has been ignored",
+              getName(),
+              processor.toString(),
+              idx,
+              item.getId());
+        } else if (errorConfiguration.getOnProcessorError() == OnProcessingError.DISCARD_ITEM) {
+          logger.error(
+              "[{}] Processor {} [{}] returned a processor error whilst processing the current item {}, and the item will not be processed by the remainder of the pipeline",
+              getName(),
+              processor.toString(),
+              idx,
+              item.getId());
+          break;
+        } else if (errorConfiguration.getOnProcessorError() == OnProcessingError.REMOVE_PROCESSOR) {
+          logger.error(
+              "[{}] Processor {} [{}] returned a processor error whilst processing the current item {}, and the processor will be removed from the pipeline",
+              getName(),
+              processor.toString(),
+              idx,
+              item.getId());
+          erroring.add(processor);
+        }
+
         if (response.hasExceptions()) {
           for (Exception e : response.getExceptions()) {
             logger.error("The following exception was caught by the processor", e);
           }
         }
-
-        erroring.add(processor);
       } else {
         metrics
             .counter("processor[" + idx + "].ok", "class", processor.getClass().getName())
@@ -233,6 +285,47 @@ public class SimplePipeline implements Pipeline {
     context.getResources().forEach(Resource::close);
   }
 
+  public enum OnSourceError {
+    REMOVE_SOURCE,
+    IGNORE
+  }
+
+  public enum OnProcessingError {
+    DISCARD_ITEM,
+    REMOVE_PROCESSOR,
+    IGNORE
+  }
+
+  public static class ErrorConfiguration {
+    private OnSourceError onSourceError = OnSourceError.REMOVE_SOURCE;
+    private OnProcessingError onItemError = OnProcessingError.DISCARD_ITEM;
+    private OnProcessingError onProcessorError = OnProcessingError.REMOVE_PROCESSOR;
+
+    public OnSourceError getOnSourceError() {
+      return onSourceError;
+    }
+
+    public void setOnSourceError(OnSourceError onSourceError) {
+      this.onSourceError = onSourceError;
+    }
+
+    public OnProcessingError getOnItemError() {
+      return onItemError;
+    }
+
+    public void setOnItemError(OnProcessingError onItemError) {
+      this.onItemError = onItemError;
+    }
+
+    public OnProcessingError getOnProcessorError() {
+      return onProcessorError;
+    }
+
+    public void setOnProcessorError(OnProcessingError onProcessorError) {
+      this.onProcessorError = onProcessorError;
+    }
+  }
+
   public static class Builder implements Pipeline.Builder {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SimplePipeline.Builder.class);
@@ -243,7 +336,8 @@ public class SimplePipeline implements Pipeline {
     private List<Processor> processors = new ArrayList<>();
     private List<Resource> resources = new ArrayList<>();
     private PipelineDescriptor descriptor = null;
-    private Context context;
+    private Context context = null;
+    private ErrorConfiguration errorConfiguration = new ErrorConfiguration();
 
     public Builder() {
       // Do nothing
@@ -288,6 +382,11 @@ public class SimplePipeline implements Pipeline {
     @Override
     public Builder withContext(Context context) {
       this.context = context;
+      return this;
+    }
+
+    public Builder withErrorConfiguration(ErrorConfiguration errorConfiguration) {
+      this.errorConfiguration = errorConfiguration;
       return this;
     }
 
@@ -404,7 +503,8 @@ public class SimplePipeline implements Pipeline {
         throw new IncompleteException("Pipeline requires at least one processor");
       }
 
-      return new SimplePipeline(pipelineContext, name, description, sources, processors);
+      return new SimplePipeline(
+          pipelineContext, name, description, sources, processors, errorConfiguration);
     }
   }
 }
