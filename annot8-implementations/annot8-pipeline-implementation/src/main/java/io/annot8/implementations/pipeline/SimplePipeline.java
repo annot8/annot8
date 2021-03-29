@@ -189,14 +189,15 @@ public class SimplePipeline implements Pipeline {
             .counter("processor[" + idx + "].itemError", "class", processor.getClass().getName())
             .increment();
 
-        if (errorConfiguration.getOnItemError() == OnProcessingError.IGNORE) {
+        if (errorConfiguration.getOnItemError() == ErrorConfiguration.OnProcessingError.IGNORE) {
           logger.error(
               "[{}] Processor {} [{}] returned an item error whilst processing the current item {}, which has been ignored",
               getName(),
               processor.toString(),
               idx,
               item.getId());
-        } else if (errorConfiguration.getOnItemError() == OnProcessingError.DISCARD_ITEM) {
+        } else if (errorConfiguration.getOnItemError()
+            == ErrorConfiguration.OnProcessingError.DISCARD_ITEM) {
           logger.error(
               "[{}] Processor {} [{}] returned an item error whilst processing the current item {}, and the item will not be processed by the remainder of the pipeline",
               getName(),
@@ -204,7 +205,8 @@ public class SimplePipeline implements Pipeline {
               idx,
               item.getId());
           break;
-        } else if (errorConfiguration.getOnItemError() == OnProcessingError.REMOVE_PROCESSOR) {
+        } else if (errorConfiguration.getOnItemError()
+            == ErrorConfiguration.OnProcessingError.REMOVE_PROCESSOR) {
           logger.error(
               "[{}] Processor {} [{}] returned an item error whilst processing the current item {}, and the processor will be removed from the pipeline",
               getName(),
@@ -225,14 +227,16 @@ public class SimplePipeline implements Pipeline {
                 "processor[" + idx + "].processorError", "class", processor.getClass().getName())
             .increment();
 
-        if (errorConfiguration.getOnProcessorError() == OnProcessingError.IGNORE) {
+        if (errorConfiguration.getOnProcessorError()
+            == ErrorConfiguration.OnProcessingError.IGNORE) {
           logger.error(
               "[{}] Processor {} [{}] returned a processor error whilst processing the current item {}, which has been ignored",
               getName(),
               processor.toString(),
               idx,
               item.getId());
-        } else if (errorConfiguration.getOnProcessorError() == OnProcessingError.DISCARD_ITEM) {
+        } else if (errorConfiguration.getOnProcessorError()
+            == ErrorConfiguration.OnProcessingError.DISCARD_ITEM) {
           logger.error(
               "[{}] Processor {} [{}] returned a processor error whilst processing the current item {}, and the item will not be processed by the remainder of the pipeline",
               getName(),
@@ -240,7 +244,8 @@ public class SimplePipeline implements Pipeline {
               idx,
               item.getId());
           break;
-        } else if (errorConfiguration.getOnProcessorError() == OnProcessingError.REMOVE_PROCESSOR) {
+        } else if (errorConfiguration.getOnProcessorError()
+            == ErrorConfiguration.OnProcessingError.REMOVE_PROCESSOR) {
           logger.error(
               "[{}] Processor {} [{}] returned a processor error whilst processing the current item {}, and the processor will be removed from the pipeline",
               getName(),
@@ -283,47 +288,6 @@ public class SimplePipeline implements Pipeline {
     sources.stream().forEach(Source::close);
     processors.stream().forEach(Processor::close);
     context.getResources().forEach(Resource::close);
-  }
-
-  public enum OnSourceError {
-    REMOVE_SOURCE,
-    IGNORE
-  }
-
-  public enum OnProcessingError {
-    DISCARD_ITEM,
-    REMOVE_PROCESSOR,
-    IGNORE
-  }
-
-  public static class ErrorConfiguration {
-    private OnSourceError onSourceError = OnSourceError.REMOVE_SOURCE;
-    private OnProcessingError onItemError = OnProcessingError.DISCARD_ITEM;
-    private OnProcessingError onProcessorError = OnProcessingError.REMOVE_PROCESSOR;
-
-    public OnSourceError getOnSourceError() {
-      return onSourceError;
-    }
-
-    public void setOnSourceError(OnSourceError onSourceError) {
-      this.onSourceError = onSourceError;
-    }
-
-    public OnProcessingError getOnItemError() {
-      return onItemError;
-    }
-
-    public void setOnItemError(OnProcessingError onItemError) {
-      this.onItemError = onItemError;
-    }
-
-    public OnProcessingError getOnProcessorError() {
-      return onProcessorError;
-    }
-
-    public void setOnProcessorError(OnProcessingError onProcessorError) {
-      this.onProcessorError = onProcessorError;
-    }
   }
 
   public static class Builder implements Pipeline.Builder {
@@ -411,11 +375,11 @@ public class SimplePipeline implements Pipeline {
 
       // Add in Logging and Metering is none has been supplied
 
-      if (!resources.stream().anyMatch(Logging.class::isInstance)) {
+      if (resources.stream().noneMatch(Logging.class::isInstance)) {
         resources.add(Logging.useLoggerFactory());
       }
 
-      if (!resources.stream().anyMatch(Metering.class::isInstance)) {
+      if (resources.stream().noneMatch(Metering.class::isInstance)) {
         resources.add(Metering.useGlobalRegistry(name));
       }
 

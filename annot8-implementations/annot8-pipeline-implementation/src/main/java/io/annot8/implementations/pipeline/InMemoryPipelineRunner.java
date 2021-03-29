@@ -6,6 +6,7 @@ import io.annot8.api.components.responses.SourceResponse;
 import io.annot8.api.context.Context;
 import io.annot8.api.data.Item;
 import io.annot8.api.data.ItemFactory;
+import io.annot8.api.exceptions.IncompleteException;
 import io.annot8.api.pipelines.Pipeline;
 import io.annot8.api.pipelines.PipelineDescriptor;
 import io.annot8.api.pipelines.PipelineRunner;
@@ -55,31 +56,6 @@ public class InMemoryPipelineRunner implements PipelineRunner {
     this.itemFactory.register(i -> logger.debug("Item {} added to queue", i.getId()));
 
     this.delay = delay;
-  }
-
-  public InMemoryPipelineRunner(PipelineDescriptor pipelineDescriptor, ItemFactory itemFactory) {
-    this(new SimplePipeline.Builder().from(pipelineDescriptor).build(), itemFactory, DEFAULT_DELAY);
-  }
-
-  public InMemoryPipelineRunner(
-      PipelineDescriptor pipelineDescriptor, ItemFactory itemFactory, long delay) {
-    this(new SimplePipeline.Builder().from(pipelineDescriptor).build(), itemFactory, delay);
-  }
-
-  public InMemoryPipelineRunner(
-      PipelineDescriptor pipelineDescriptor, ItemFactory itemFactory, Context context) {
-    this(
-        new SimplePipeline.Builder().from(pipelineDescriptor).withContext(context).build(),
-        itemFactory,
-        DEFAULT_DELAY);
-  }
-
-  public InMemoryPipelineRunner(
-      PipelineDescriptor pipelineDescriptor, ItemFactory itemFactory, Context context, long delay) {
-    this(
-        new SimplePipeline.Builder().from(pipelineDescriptor).withContext(context).build(),
-        itemFactory,
-        delay);
   }
 
   @Override
@@ -154,5 +130,55 @@ public class InMemoryPipelineRunner implements PipelineRunner {
 
   public boolean isRunning() {
     return running;
+  }
+
+  public static class Builder {
+    private long delay = DEFAULT_DELAY;
+    private ErrorConfiguration errorConfiguration = new ErrorConfiguration();
+    private Context context = null;
+
+    private ItemFactory itemFactory;
+    private PipelineDescriptor pipelineDescriptor;
+
+    public Builder withDelay(long delay) {
+      this.delay = delay;
+      return this;
+    }
+
+    public Builder withErrorConfiguration(ErrorConfiguration errorConfiguration) {
+      this.errorConfiguration = errorConfiguration;
+      return this;
+    }
+
+    public Builder withContext(Context context) {
+      this.context = context;
+      return this;
+    }
+
+    public Builder withItemFactory(ItemFactory itemFactory) {
+      this.itemFactory = itemFactory;
+      return this;
+    }
+
+    public Builder withPipelineDescriptor(PipelineDescriptor descriptor) {
+      this.pipelineDescriptor = descriptor;
+      return this;
+    }
+
+    public InMemoryPipelineRunner build() {
+      if (itemFactory == null) throw new IncompleteException("ItemFactory must be provided");
+
+      if (pipelineDescriptor == null)
+        throw new IncompleteException("PipelineDescriptor must be provided");
+
+      return new InMemoryPipelineRunner(
+          new SimplePipeline.Builder()
+              .from(pipelineDescriptor)
+              .withErrorConfiguration(errorConfiguration)
+              .withContext(context)
+              .build(),
+          itemFactory,
+          delay);
+    }
   }
 }
