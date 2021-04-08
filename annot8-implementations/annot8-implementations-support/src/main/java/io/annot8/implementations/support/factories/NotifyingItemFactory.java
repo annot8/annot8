@@ -39,4 +39,18 @@ public class NotifyingItemFactory implements ItemFactory, Listenable<Consumer<It
     listeners.fire(item);
     return item;
   }
+
+  @Override
+  public Item create(Consumer<Item> func) {
+    Item item = new NotifyingItem(itemFactory.create(func), this);
+    listeners.fire(item);
+    return item;
+  }
+
+  @Override
+  public Item create(Item parent, Consumer<Item> func) {
+    Item item = new NotifyingItem(itemFactory.create(parent, func), this);
+    listeners.fire(item);
+    return item;
+  }
 }

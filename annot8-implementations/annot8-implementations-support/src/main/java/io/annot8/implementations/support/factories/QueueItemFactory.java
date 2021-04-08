@@ -3,16 +3,16 @@ package io.annot8.implementations.support.factories;
 
 import io.annot8.api.data.Item;
 import io.annot8.api.data.ItemFactory;
-import java.util.LinkedList;
 import java.util.Optional;
 import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class QueueItemFactory extends NotifyingItemFactory {
 
   private final Queue<Item> queue;
 
   public QueueItemFactory(ItemFactory itemFactory) {
-    this(itemFactory, new LinkedList<>());
+    this(itemFactory, new ConcurrentLinkedQueue<>());
   }
 
   public QueueItemFactory(ItemFactory itemFactory, Queue<Item> queue) {

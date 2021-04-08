@@ -102,7 +102,7 @@ public class InMemoryPipelineRunner implements PipelineRunner {
       }
 
       // If we are done, then we stop
-      if (sr.getStatus() == SourceResponse.Status.DONE) {
+      if (itemFactory.isEmpty() && sr.getStatus() == SourceResponse.Status.DONE) {
         stop();
       }
 

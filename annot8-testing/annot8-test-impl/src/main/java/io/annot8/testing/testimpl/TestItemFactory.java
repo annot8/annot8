@@ -5,6 +5,7 @@ import io.annot8.api.data.Item;
 import io.annot8.api.data.ItemFactory;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class TestItemFactory implements ItemFactory {
 
@@ -22,6 +23,22 @@ public class TestItemFactory implements ItemFactory {
     TestItem i = new TestItem(parent.getId());
     createdItems.add(i);
     return i;
+  }
+
+  @Override
+  public Item create(Consumer<Item> func) {
+    Item item = new TestItem();
+    func.accept(item);
+    createdItems.add(item);
+    return item;
+  }
+
+  @Override
+  public Item create(Item parent, Consumer<Item> func) {
+    Item item = new TestItem(parent.getId());
+    func.accept(item);
+    createdItems.add(item);
+    return item;
   }
 
   public List<Item> getCreatedItems() {
