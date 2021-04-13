@@ -4,6 +4,7 @@ package io.annot8.implementations.pipeline;
 import io.annot8.api.components.ProcessorDescriptor;
 import io.annot8.api.components.SourceDescriptor;
 import io.annot8.api.exceptions.IncompleteException;
+import io.annot8.api.pipelines.ErrorConfiguration;
 import io.annot8.api.pipelines.NoOpOrderer;
 import io.annot8.api.pipelines.PipelineDescriptor;
 import io.annot8.api.pipelines.PipelineOrderer;
@@ -18,15 +19,19 @@ public class SimplePipelineDescriptor implements PipelineDescriptor {
   private final Collection<SourceDescriptor> sources;
   private final Collection<ProcessorDescriptor> processors;
 
+  private final ErrorConfiguration errorConfiguration;
+
   private SimplePipelineDescriptor(
       String name,
       String description,
       Collection<SourceDescriptor> sources,
-      Collection<ProcessorDescriptor> processors) {
+      Collection<ProcessorDescriptor> processors,
+      ErrorConfiguration errorConfiguration) {
     this.name = name;
     this.description = description;
     this.sources = sources;
     this.processors = processors;
+    this.errorConfiguration = errorConfiguration;
   }
 
   @Override
@@ -49,6 +54,11 @@ public class SimplePipelineDescriptor implements PipelineDescriptor {
     return processors;
   }
 
+  @Override
+  public ErrorConfiguration getErrorConfiguration() {
+    return errorConfiguration;
+  }
+
   public static class Builder implements PipelineDescriptor.Builder {
 
     private String name;
@@ -56,6 +66,7 @@ public class SimplePipelineDescriptor implements PipelineDescriptor {
     private List<SourceDescriptor> sources = new ArrayList<>();
     private List<ProcessorDescriptor> processors = new ArrayList<>();
     private PipelineOrderer orderer = NoOpOrderer.getInstance();
+    private ErrorConfiguration errorConfiguration = new ErrorConfiguration();
 
     @Override
     public Builder from(PipelineDescriptor pipelineDescriptor) {
@@ -98,6 +109,13 @@ public class SimplePipelineDescriptor implements PipelineDescriptor {
     }
 
     @Override
+    public PipelineDescriptor.Builder withErrorConfiguration(
+        ErrorConfiguration errorConfiguration) {
+      this.errorConfiguration = errorConfiguration;
+      return this;
+    }
+
+    @Override
     public SimplePipelineDescriptor build() throws IncompleteException {
       if (name == null || name.isEmpty()) {
         throw new IncompleteException("Pipeline must have a name");
@@ -118,7 +136,8 @@ public class SimplePipelineDescriptor implements PipelineDescriptor {
       Collection<SourceDescriptor> orderedSources = orderer.orderSources(sources);
       Collection<ProcessorDescriptor> orderedProcessors = orderer.orderProcessors(processors);
 
-      return new SimplePipelineDescriptor(name, description, orderedSources, orderedProcessors);
+      return new SimplePipelineDescriptor(
+          name, description, orderedSources, orderedProcessors, errorConfiguration);
     }
   }
 }

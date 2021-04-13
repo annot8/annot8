@@ -7,6 +7,7 @@ import io.annot8.api.context.Context;
 import io.annot8.api.data.Item;
 import io.annot8.api.data.ItemFactory;
 import io.annot8.api.exceptions.IncompleteException;
+import io.annot8.api.pipelines.ErrorConfiguration;
 import io.annot8.api.pipelines.Pipeline;
 import io.annot8.api.pipelines.PipelineDescriptor;
 import io.annot8.api.pipelines.PipelineRunner;

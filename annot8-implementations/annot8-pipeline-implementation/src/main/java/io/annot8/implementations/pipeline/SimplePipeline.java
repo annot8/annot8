@@ -11,6 +11,7 @@ import io.annot8.api.context.Context;
 import io.annot8.api.data.Item;
 import io.annot8.api.data.ItemFactory;
 import io.annot8.api.exceptions.IncompleteException;
+import io.annot8.api.pipelines.ErrorConfiguration;
 import io.annot8.api.pipelines.Pipeline;
 import io.annot8.api.pipelines.PipelineDescriptor;
 import io.annot8.api.settings.NoSettings;
@@ -87,6 +88,10 @@ public class SimplePipeline implements Pipeline {
 
   public Collection<Processor> getProcessors() {
     return processors;
+  }
+
+  public ErrorConfiguration getErrorConfiguration() {
+    return errorConfiguration;
   }
 
   public SourceResponse read(ItemFactory itemFactory) {
