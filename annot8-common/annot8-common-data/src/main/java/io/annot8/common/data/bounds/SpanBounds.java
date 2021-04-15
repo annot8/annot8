@@ -81,6 +81,8 @@ public class SpanBounds implements Bounds {
       return Optional.of(r);
     }
 
+    // TODO: Add support for spans of an Audio clip
+
     return Optional.empty();
   }
 
