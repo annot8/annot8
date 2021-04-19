@@ -9,6 +9,7 @@ import jakarta.json.bind.annotation.JsonbProperty;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import javax.sound.sampled.AudioInputStream;
 
 /**
  * A position marker within a content.
@@ -91,10 +92,11 @@ public class PositionBounds implements Bounds {
       return position < list.size();
     } else if (data instanceof String) {
       String s = (String) data;
-      return position < s.length();
+      return position <= s.length();
+    } else if (data instanceof AudioInputStream) {
+      AudioInputStream ais = (AudioInputStream) data;
+      return position <= ais.getFrameLength();
     }
-
-    // TODO: Add support for Audio
 
     return false;
   }
