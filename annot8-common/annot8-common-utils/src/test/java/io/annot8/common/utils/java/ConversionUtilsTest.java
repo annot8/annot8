@@ -1,9 +1,7 @@
 /* Annot8 (annot8.io) - Licensed under Apache-2.0. */
 package io.annot8.common.utils.java;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
@@ -80,5 +78,29 @@ public class ConversionUtilsTest {
     assertEquals(1.0, testStringValue.get(), 0.001);
     assertEquals(1234567890.0, testLongValue.get(), 0.001);
     assertEquals(1.2, testDoubleValue.get(), 0.001);
+  }
+
+  @Test
+  public void testParseString() {
+    assertNull(ConversionUtils.parseString(null));
+
+    assertEquals(true, ConversionUtils.parseString("true"));
+    assertEquals(true, ConversionUtils.parseString("TRUE"));
+    assertEquals(true, ConversionUtils.parseString(" True  "));
+    assertEquals(false, ConversionUtils.parseString("false"));
+    assertEquals(false, ConversionUtils.parseString("FALSE"));
+    assertEquals(false, ConversionUtils.parseString("  False "));
+
+    assertEquals(123L, ConversionUtils.parseString("123"));
+    assertEquals(-123L, ConversionUtils.parseString("-123"));
+
+    assertEquals(123.45, ConversionUtils.parseString("123.45"));
+    assertEquals(-123.45, ConversionUtils.parseString("-123.45"));
+    assertEquals(0.12, ConversionUtils.parseString("0.12"));
+
+    assertEquals("012345", ConversionUtils.parseString("012345"));
+
+    assertEquals("Hello World!", ConversionUtils.parseString("Hello World!"));
+    assertEquals(" Hello World!  ", ConversionUtils.parseString(" Hello World!  "));
   }
 }
