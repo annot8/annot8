@@ -55,6 +55,9 @@ public class InMemoryPipelineRunner implements PipelineRunner {
 
     this.itemFactory = new QueueItemFactory(itemFactory);
     this.itemFactory.register(i -> logger.debug("Item {} added to queue", i.getId()));
+    this.itemFactory.register(i -> metrics.counter("itemsCreated").increment());
+
+    metrics.gauge("queueSize", this.itemFactory, QueueItemFactory::getQueueSize);
 
     this.delay = delay;
   }

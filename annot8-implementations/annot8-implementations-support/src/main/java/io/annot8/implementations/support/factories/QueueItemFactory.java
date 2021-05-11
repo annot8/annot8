@@ -33,4 +33,8 @@ public class QueueItemFactory extends NotifyingItemFactory {
   public Optional<Item> next() {
     return Optional.ofNullable(queue.poll());
   }
+
+  public int getQueueSize() {
+    return queue.size();
+  }
 }
