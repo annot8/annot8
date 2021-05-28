@@ -11,14 +11,12 @@ import io.annot8.implementations.support.content.AbstractContentBuilderFactory;
 import io.annot8.implementations.support.stores.AnnotationStoreFactory;
 import io.annot8.testing.testimpl.AbstractTestContent;
 import io.annot8.testing.testimpl.TestAnnotationStoreFactory;
-
-import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.AudioInputStream;
 import java.io.ByteArrayInputStream;
 import java.util.function.Supplier;
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioInputStream;
 
-public class TestAudioContent extends AbstractTestContent<AudioInputStream>
-    implements Audio {
+public class TestAudioContent extends AbstractTestContent<AudioInputStream> implements Audio {
 
   public TestAudioContent() {
     this(null);
@@ -27,7 +25,12 @@ public class TestAudioContent extends AbstractTestContent<AudioInputStream>
   public TestAudioContent(Item item) {
     super(item, AudioInputStream.class);
     // Ths is not really useful in general, but its something non-null
-    setData(() -> new AudioInputStream(new ByteArrayInputStream(new byte[0]), new AudioFormat(0.0f, 0, 0, true, true), 0L));
+    setData(
+        () ->
+            new AudioInputStream(
+                new ByteArrayInputStream(new byte[0]),
+                new AudioFormat(0.0f, 0, 0, true, true),
+                0L));
   }
 
   public TestAudioContent(
@@ -75,7 +78,10 @@ public class TestAudioContent extends AbstractTestContent<AudioInputStream>
 
     @Override
     protected TestAudioContent create(
-        String id, String description, ImmutableProperties properties, Supplier<AudioInputStream> data) {
+        String id,
+        String description,
+        ImmutableProperties properties,
+        Supplier<AudioInputStream> data) {
       return new TestAudioContent(
           getItem(), annotationStoreFactory, id, description, properties, data);
     }
