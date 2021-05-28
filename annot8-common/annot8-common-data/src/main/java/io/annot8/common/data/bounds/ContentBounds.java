@@ -3,8 +3,8 @@ package io.annot8.common.data.bounds;
 
 import io.annot8.api.bounds.Bounds;
 import io.annot8.api.data.Content;
+import jakarta.json.bind.annotation.JsonbCreator;
 import java.util.Optional;
-import javax.json.bind.annotation.JsonbCreator;
 
 /**
  * Implementation of Bounds indicating that an annotation covers the entire content.

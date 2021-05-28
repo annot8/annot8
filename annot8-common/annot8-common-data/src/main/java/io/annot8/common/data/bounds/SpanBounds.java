@@ -4,11 +4,13 @@ package io.annot8.common.data.bounds;
 import io.annot8.api.bounds.Bounds;
 import io.annot8.api.data.Content;
 import io.annot8.api.exceptions.InvalidBoundsException;
+import jakarta.json.bind.annotation.JsonbCreator;
+import jakarta.json.bind.annotation.JsonbProperty;
+import jakarta.json.bind.annotation.JsonbTransient;
+import java.io.IOException;
 import java.util.Objects;
 import java.util.Optional;
-import javax.json.bind.annotation.JsonbCreator;
-import javax.json.bind.annotation.JsonbProperty;
-import javax.json.bind.annotation.JsonbTransient;
+import javax.sound.sampled.AudioInputStream;
 
 /** Implementation of Bounds for a simple 2D span, such as an offset of text. */
 public class SpanBounds implements Bounds {
@@ -79,6 +81,26 @@ public class SpanBounds implements Bounds {
       R r = (R) s.substring(normBegin, normEnd);
 
       return Optional.of(r);
+    } else if (requiredClass.isAssignableFrom(AudioInputStream.class)
+        && data.getClass().equals(AudioInputStream.class)) {
+      AudioInputStream ais = (AudioInputStream) data;
+
+      try {
+        int frameSize = ais.getFormat().getFrameSize();
+
+        long framesBegin = Math.max(0, begin);
+        long bytesBegin = framesBegin * frameSize;
+        long framesEnd = Math.min(ais.getFrameLength(), end);
+
+        ais.skip(bytesBegin);
+
+        @SuppressWarnings("unchecked") // This is checked R = AudioInputStream.class
+        R r = (R) new AudioInputStream(ais, ais.getFormat(), framesEnd - framesBegin);
+        return Optional.of(r);
+
+      } catch (IOException e) {
+        return Optional.empty();
+      }
     }
 
     return Optional.empty();
@@ -91,7 +113,10 @@ public class SpanBounds implements Bounds {
 
     if (data.getClass().equals(String.class)) {
       String s = (String) data;
-      return end <= s.length();
+      return begin >= 0 && end <= s.length();
+    } else if (data instanceof AudioInputStream) {
+      AudioInputStream ais = (AudioInputStream) data;
+      return begin >= 0 && end <= ais.getFrameLength();
     }
 
     return false;

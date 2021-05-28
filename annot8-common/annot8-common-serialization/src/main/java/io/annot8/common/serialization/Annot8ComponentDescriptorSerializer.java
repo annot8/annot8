@@ -2,9 +2,9 @@
 package io.annot8.common.serialization;
 
 import io.annot8.api.components.Annot8ComponentDescriptor;
-import javax.json.bind.serializer.JsonbSerializer;
-import javax.json.bind.serializer.SerializationContext;
-import javax.json.stream.JsonGenerator;
+import jakarta.json.bind.serializer.JsonbSerializer;
+import jakarta.json.bind.serializer.SerializationContext;
+import jakarta.json.stream.JsonGenerator;
 
 /** Serialize Annot8ComponentDescriptor from JSON, using the JSON-B serializer interface */
 public class Annot8ComponentDescriptorSerializer
@@ -17,7 +17,7 @@ public class Annot8ComponentDescriptorSerializer
     generator.writeStartObject(descriptor.getClass().getName());
     generator.write("name", descriptor.getName());
     ctx.serialize("settings", descriptor.getSettings(), generator);
-    // TODO: Use reflection to loop through properties rather than hard code
+
     generator.writeEnd();
     generator.writeEnd();
   }

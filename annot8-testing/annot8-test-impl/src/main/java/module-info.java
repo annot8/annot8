@@ -4,7 +4,7 @@ open module io.annot8.testing.testimpl {
   requires io.annot8.common.utils;
   requires io.annot8.common.data;
   requires org.slf4j;
-  requires java.json.bind;
+  requires jakarta.json.bind;
   requires java.desktop;
 
   exports io.annot8.testing.testimpl.content;

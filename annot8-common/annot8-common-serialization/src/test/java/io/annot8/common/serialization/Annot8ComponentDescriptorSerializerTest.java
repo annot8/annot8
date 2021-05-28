@@ -4,9 +4,9 @@ package io.annot8.common.serialization;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import io.annot8.common.serialization.TestNested.Descriptor;
-import javax.json.bind.Jsonb;
-import javax.json.bind.JsonbBuilder;
-import javax.json.bind.JsonbConfig;
+import jakarta.json.bind.Jsonb;
+import jakarta.json.bind.JsonbBuilder;
+import jakarta.json.bind.JsonbConfig;
 import org.junit.jupiter.api.Test;
 
 public class Annot8ComponentDescriptorSerializerTest {

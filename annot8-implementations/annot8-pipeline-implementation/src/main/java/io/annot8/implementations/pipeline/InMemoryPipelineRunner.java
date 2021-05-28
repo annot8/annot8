@@ -1,9 +1,13 @@
 /* Annot8 (annot8.io) - Licensed under Apache-2.0. */
 package io.annot8.implementations.pipeline;
 
+import io.annot8.api.components.responses.ProcessorResponse;
 import io.annot8.api.components.responses.SourceResponse;
 import io.annot8.api.context.Context;
+import io.annot8.api.data.Item;
 import io.annot8.api.data.ItemFactory;
+import io.annot8.api.exceptions.IncompleteException;
+import io.annot8.api.pipelines.ErrorConfiguration;
 import io.annot8.api.pipelines.Pipeline;
 import io.annot8.api.pipelines.PipelineDescriptor;
 import io.annot8.api.pipelines.PipelineRunner;
@@ -12,12 +16,13 @@ import io.annot8.common.components.metering.Metering;
 import io.annot8.common.components.metering.Metrics;
 import io.annot8.common.components.metering.NoOpMetrics;
 import io.annot8.implementations.support.factories.QueueItemFactory;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class InMemoryPipelineRunner implements PipelineRunner {
 
-  private static final long DEFAULT_DELAY = 1000;
+  private static final long DEFAULT_DELAY = 0;
 
   private final Pipeline pipeline;
   private final Logger logger;
@@ -26,6 +31,7 @@ public class InMemoryPipelineRunner implements PipelineRunner {
   private final long delay;
 
   private boolean running = true;
+  private long pipelineFinished = -1;
 
   public InMemoryPipelineRunner(Pipeline pipeline, ItemFactory itemFactory) {
     this(pipeline, itemFactory, DEFAULT_DELAY);
@@ -49,33 +55,11 @@ public class InMemoryPipelineRunner implements PipelineRunner {
 
     this.itemFactory = new QueueItemFactory(itemFactory);
     this.itemFactory.register(i -> logger.debug("Item {} added to queue", i.getId()));
+    this.itemFactory.register(i -> metrics.counter("itemsCreated").increment());
+
+    metrics.gauge("queueSize", this.itemFactory, QueueItemFactory::getQueueSize);
 
     this.delay = delay;
-  }
-
-  public InMemoryPipelineRunner(PipelineDescriptor pipelineDescriptor, ItemFactory itemFactory) {
-    this(new SimplePipeline.Builder().from(pipelineDescriptor).build(), itemFactory, DEFAULT_DELAY);
-  }
-
-  public InMemoryPipelineRunner(
-      PipelineDescriptor pipelineDescriptor, ItemFactory itemFactory, long delay) {
-    this(new SimplePipeline.Builder().from(pipelineDescriptor).build(), itemFactory, delay);
-  }
-
-  public InMemoryPipelineRunner(
-      PipelineDescriptor pipelineDescriptor, ItemFactory itemFactory, Context context) {
-    this(
-        new SimplePipeline.Builder().from(pipelineDescriptor).withContext(context).build(),
-        itemFactory,
-        DEFAULT_DELAY);
-  }
-
-  public InMemoryPipelineRunner(
-      PipelineDescriptor pipelineDescriptor, ItemFactory itemFactory, Context context, long delay) {
-    this(
-        new SimplePipeline.Builder().from(pipelineDescriptor).withContext(context).build(),
-        itemFactory,
-        delay);
   }
 
   @Override
@@ -84,21 +68,45 @@ public class InMemoryPipelineRunner implements PipelineRunner {
     running = true;
 
     Long startTime =
-        metrics.gauge("runTime", System.currentTimeMillis(), t -> System.currentTimeMillis() - t);
+        metrics.gauge(
+            "runTime", // Convert from milliseconds to seconds
+            System.currentTimeMillis(),
+            t -> {
+              if (running) {
+                return (System.currentTimeMillis() - t) / 1000.0;
+              } else {
+                // Once the pipeline has finished, don't continue to increment the runTime
+                return (pipelineFinished - t) / 1000.0;
+              }
+            });
     logger.debug("Pipeline {} started at {}", pipeline.getName(), startTime);
 
     while (running) {
       SourceResponse sr = pipeline.read(itemFactory);
 
       while (running && !itemFactory.isEmpty()) {
-        metrics
-            .timer("itemProcessingTime")
-            .record(() -> itemFactory.next().ifPresent(pipeline::process));
-        metrics.counter("itemsProcessed").increment();
+        Optional<Item> optItem = itemFactory.next();
+
+        if (optItem.isPresent()) {
+          ProcessorResponse response =
+              metrics
+                  .timer("itemProcessingTime")
+                  .record(() -> pipeline.process(optItem.get())); // Gives time in seconds
+
+          metrics.counter("itemsProcessed").increment();
+
+          if (response.getStatus().equals(ProcessorResponse.Status.OK)) {
+            metrics.counter("itemsProcessed.ok").increment();
+          } else if (response.getStatus().equals(ProcessorResponse.Status.PROCESSOR_ERROR)) {
+            metrics.counter("itemsProcessed.processorError").increment();
+          } else if (response.getStatus().equals(ProcessorResponse.Status.ITEM_ERROR)) {
+            metrics.counter("itemsProcessed.itemError").increment();
+          }
+        }
       }
 
       // If we are done, then we stop
-      if (sr.getStatus() == SourceResponse.Status.DONE) {
+      if (itemFactory.isEmpty() && sr.getStatus() == SourceResponse.Status.DONE) {
         stop();
       }
 
@@ -111,15 +119,70 @@ public class InMemoryPipelineRunner implements PipelineRunner {
       }
     }
 
-    logger.debug("Pipeline {} finished at {}", pipeline.getName(), startTime);
+    pipelineFinished = System.currentTimeMillis();
+    logger.debug("Pipeline {} finished at {}", pipeline.getName(), pipelineFinished);
     logger.info(
         "Pipeline {} ran for {} seconds",
         pipeline.getName(),
-        (System.currentTimeMillis() - startTime) / 1000.0);
+        (pipelineFinished - startTime) / 1000.0);
   }
 
   public void stop() {
     logger.info("Stopping pipeline after current item/source");
     running = false;
+  }
+
+  public boolean isRunning() {
+    return running;
+  }
+
+  public static class Builder {
+    private long delay = DEFAULT_DELAY;
+    private ErrorConfiguration errorConfiguration = new ErrorConfiguration();
+    private Context context = null;
+
+    private ItemFactory itemFactory;
+    private PipelineDescriptor pipelineDescriptor;
+
+    public Builder withDelay(long delay) {
+      this.delay = delay;
+      return this;
+    }
+
+    public Builder withErrorConfiguration(ErrorConfiguration errorConfiguration) {
+      this.errorConfiguration = errorConfiguration;
+      return this;
+    }
+
+    public Builder withContext(Context context) {
+      this.context = context;
+      return this;
+    }
+
+    public Builder withItemFactory(ItemFactory itemFactory) {
+      this.itemFactory = itemFactory;
+      return this;
+    }
+
+    public Builder withPipelineDescriptor(PipelineDescriptor descriptor) {
+      this.pipelineDescriptor = descriptor;
+      return this;
+    }
+
+    public InMemoryPipelineRunner build() {
+      if (itemFactory == null) throw new IncompleteException("ItemFactory must be provided");
+
+      if (pipelineDescriptor == null)
+        throw new IncompleteException("PipelineDescriptor must be provided");
+
+      return new InMemoryPipelineRunner(
+          new SimplePipeline.Builder()
+              .from(pipelineDescriptor)
+              .withErrorConfiguration(errorConfiguration)
+              .withContext(context)
+              .build(),
+          itemFactory,
+          delay);
+    }
   }
 }

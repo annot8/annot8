@@ -90,7 +90,11 @@ public class InMemoryPipelineDescriptorRunnerTest {
     when(pipelineDescriptor.getSources()).thenReturn(Arrays.asList(sd1, sd2));
     when((pipelineDescriptor.getProcessors())).thenReturn(Arrays.asList(pd1, pd2));
 
-    InMemoryPipelineRunner runner = new InMemoryPipelineRunner(pipelineDescriptor, itemFactory);
+    InMemoryPipelineRunner runner =
+        new InMemoryPipelineRunner.Builder()
+            .withPipelineDescriptor(pipelineDescriptor)
+            .withItemFactory(itemFactory)
+            .build();
     runner.run();
 
     verify(itemFactory, times(5)).create();

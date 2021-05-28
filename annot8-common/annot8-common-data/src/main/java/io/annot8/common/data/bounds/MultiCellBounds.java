@@ -4,11 +4,11 @@ package io.annot8.common.data.bounds;
 import io.annot8.api.data.Content;
 import io.annot8.common.data.content.Row;
 import io.annot8.common.data.content.TableContent;
+import jakarta.json.bind.annotation.JsonbCreator;
+import jakarta.json.bind.annotation.JsonbProperty;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import javax.json.bind.annotation.JsonbCreator;
-import javax.json.bind.annotation.JsonbProperty;
 
 /**
  * Bounds to represent multiple cells within a table row

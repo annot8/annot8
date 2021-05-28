@@ -4,11 +4,12 @@ package io.annot8.common.data.bounds;
 import io.annot8.api.bounds.Bounds;
 import io.annot8.api.data.Content;
 import io.annot8.api.exceptions.InvalidBoundsException;
+import jakarta.json.bind.annotation.JsonbCreator;
+import jakarta.json.bind.annotation.JsonbProperty;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import javax.json.bind.annotation.JsonbCreator;
-import javax.json.bind.annotation.JsonbProperty;
+import javax.sound.sampled.AudioInputStream;
 
 /**
  * A position marker within a content.
@@ -91,7 +92,10 @@ public class PositionBounds implements Bounds {
       return position < list.size();
     } else if (data instanceof String) {
       String s = (String) data;
-      return position < s.length();
+      return position <= s.length();
+    } else if (data instanceof AudioInputStream) {
+      AudioInputStream ais = (AudioInputStream) data;
+      return position <= ais.getFrameLength();
     }
 
     return false;
