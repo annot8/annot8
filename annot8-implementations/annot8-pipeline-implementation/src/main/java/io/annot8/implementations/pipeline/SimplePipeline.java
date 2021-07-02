@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
+import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,15 +33,13 @@ public class SimplePipeline implements Pipeline {
   private final String name;
   private final String description;
 
-  private final Collection<Source> sources;
+  private final List<Source> sources;
   private final Collection<Processor> processors;
   private final Context context;
   private final Logger logger;
   private final Metrics metrics;
 
   private final ErrorConfiguration errorConfiguration;
-
-  private int sourceIndex = 0;
 
   private SimplePipeline(
       Context context,
@@ -52,7 +50,7 @@ public class SimplePipeline implements Pipeline {
       ErrorConfiguration errorConfiguration) {
     this.name = name;
     this.description = description;
-    this.sources = sources;
+    this.sources = new ArrayList<>(sources);
     this.processors = processors;
     this.context = context;
     this.errorConfiguration = errorConfiguration;
@@ -95,76 +93,84 @@ public class SimplePipeline implements Pipeline {
   }
 
   public SourceResponse read(ItemFactory itemFactory) {
-    Optional<Source> optional = getSources().stream().findFirst();
+    int sourceIndex = -1;
 
-    if (optional.isEmpty()) {
-      return SourceResponse.done();
-    }
+    for (Source source : getSources()) {
+      sourceIndex++;
 
-    Source source = optional.get();
+      if (source == null) continue;
 
-    logger.debug(
-        "[{}] Reading source {} [{}] for new items", getName(), source.toString(), sourceIndex);
-    SourceResponse response =
-        metrics
-            .timer("source[" + sourceIndex + "].readTime", "class", source.getClass().getName())
-            .record(() -> source.read(itemFactory));
+      logger.debug(
+          "[{}] Reading source {} [{}] for new items", getName(), source.toString(), sourceIndex);
+      SourceResponse response =
+          metrics
+              .timer("source[" + sourceIndex + "].readTime", "class", source.getClass().getName())
+              .record(() -> source.read(itemFactory));
 
-    switch (response.getStatus()) {
-      case DONE:
-        metrics
-            .counter("source[" + sourceIndex + "].done", "class", source.getClass().getName())
-            .increment();
-        logger.info(
-            "[{}] Finished reading all items from source {} [{}]",
-            getName(),
-            source.toString(),
-            sourceIndex);
+      switch (response.getStatus()) {
+        case EMPTY:
+          // Don't record metrics or remove the source, just move on to the next source
+          continue;
+        case DONE:
+          // Record metrics, remove source, and then move on to the next source
+          metrics
+              .counter("source[" + sourceIndex + "].done", "class", source.getClass().getName())
+              .increment();
+          logger.info(
+              "[{}] Finished reading all items from source {} [{}]",
+              getName(),
+              source.toString(),
+              sourceIndex);
 
-        remove(source);
+          remove(source);
 
-        // Move onto the next source
-        return read(itemFactory);
-      case SOURCE_ERROR:
-        metrics
-            .counter(
-                "source[" + sourceIndex + "].sourceError", "class", source.getClass().getName())
-            .increment();
+          continue;
+        case SOURCE_ERROR:
+          // Record metrics, handle error
+          metrics
+              .counter(
+                  "source[" + sourceIndex + "].sourceError", "class", source.getClass().getName())
+              .increment();
 
-        switch (errorConfiguration.getOnSourceError()) {
-          case IGNORE:
-            logger.error(
-                "[{}] Source {} [{}] returned an error, which has been ignored",
-                getName(),
-                source.toString(),
-                sourceIndex);
-            break;
-          case REMOVE_SOURCE:
-            logger.error(
-                "[{}] Source {} [{}] returned an error and will be removed from the pipeline",
-                getName(),
-                source.toString(),
-                sourceIndex);
-            remove(source);
-            break;
-        }
-
-        if (response.hasExceptions()) {
-          for (Exception e : response.getExceptions()) {
-            logger.error("The following exception was caught by the source", e);
+          switch (errorConfiguration.getOnSourceError()) {
+            case IGNORE:
+              logger.error(
+                  "[{}] Source {} [{}] returned an error, which has been ignored",
+                  getName(),
+                  source.toString(),
+                  sourceIndex);
+              continue;
+            case REMOVE_SOURCE:
+              logger.error(
+                  "[{}] Source {} [{}] returned an error and will be removed from the pipeline",
+                  getName(),
+                  source.toString(),
+                  sourceIndex);
+              remove(source);
+              break;
           }
-        }
 
-        return response;
-      case OK:
-        metrics
-            .counter("source[" + sourceIndex + "].ok", "class", source.getClass().getName())
-            .increment();
+          if (response.hasExceptions()) {
+            for (Exception e : response.getExceptions()) {
+              logger.error("The following exception was caught by the source", e);
+            }
+          }
 
-        // Don't record metrics for EMPTY
+          break;
+        case OK:
+          // Record metrics
+          metrics
+              .counter("source[" + sourceIndex + "].ok", "class", source.getClass().getName())
+              .increment();
+          break;
+      }
+
+      return response;
     }
 
-    return response;
+    return sources.stream().anyMatch(Objects::nonNull)
+        ? SourceResponse.empty()
+        : SourceResponse.done();
   }
 
   public ProcessorResponse process(Item item) {
@@ -285,8 +291,8 @@ public class SimplePipeline implements Pipeline {
   }
 
   protected void remove(Source source) {
-    sourceIndex++;
-    sources.remove(source);
+    int idx = sources.indexOf(source);
+    sources.set(idx, null);
   }
 
   public void close() {
