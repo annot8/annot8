@@ -8,8 +8,11 @@ import io.annot8.api.data.Item;
 import io.annot8.api.data.ItemFactory;
 import io.annot8.api.exceptions.IncompleteException;
 import io.annot8.api.pipelines.ErrorConfiguration;
+import io.annot8.api.pipelines.ItemStatus;
+import io.annot8.api.pipelines.NoOpItemState;
 import io.annot8.api.pipelines.Pipeline;
 import io.annot8.api.pipelines.PipelineDescriptor;
+import io.annot8.api.pipelines.PipelineItemState;
 import io.annot8.api.pipelines.PipelineRunner;
 import io.annot8.common.components.logging.Logging;
 import io.annot8.common.components.metering.Metering;
@@ -29,6 +32,7 @@ public class InMemoryPipelineRunner implements PipelineRunner {
   private final Metrics metrics;
   private final QueueItemFactory itemFactory;
   private final long delay;
+  private final PipelineItemState itemState;
 
   private boolean running = true;
   private long pipelineFinished = -1;
@@ -38,6 +42,11 @@ public class InMemoryPipelineRunner implements PipelineRunner {
   }
 
   public InMemoryPipelineRunner(Pipeline pipeline, ItemFactory itemFactory, long delay) {
+    this(pipeline, itemFactory, delay, NoOpItemState.getInstance());
+  }
+
+  public InMemoryPipelineRunner(
+      Pipeline pipeline, ItemFactory itemFactory, long delay, PipelineItemState itemState) {
     this.pipeline = pipeline;
     this.logger =
         pipeline
@@ -60,6 +69,7 @@ public class InMemoryPipelineRunner implements PipelineRunner {
     metrics.gauge("queueSize", this.itemFactory, QueueItemFactory::getQueueSize);
 
     this.delay = delay;
+    this.itemState = itemState;
   }
 
   @Override
@@ -88,18 +98,24 @@ public class InMemoryPipelineRunner implements PipelineRunner {
         Optional<Item> optItem = itemFactory.next();
 
         if (optItem.isPresent()) {
+          Item item = optItem.get();
+
+          itemState.setItemStatus(item.getId(), ItemStatus.PROCESSING);
           ProcessorResponse response =
               metrics
                   .timer("itemProcessingTime")
-                  .record(() -> pipeline.process(optItem.get())); // Gives time in seconds
+                  .record(() -> pipeline.process(item)); // Gives time in seconds
 
           metrics.counter("itemsProcessed").increment();
 
           if (response.getStatus().equals(ProcessorResponse.Status.OK)) {
+            itemState.setItemStatus(item.getId(), ItemStatus.PROCESSED_OK);
             metrics.counter("itemsProcessed.ok").increment();
           } else if (response.getStatus().equals(ProcessorResponse.Status.PROCESSOR_ERROR)) {
+            itemState.setItemStatus(item.getId(), ItemStatus.PROCESSED_PROCESSOR_ERROR);
             metrics.counter("itemsProcessed.processorError").increment();
           } else if (response.getStatus().equals(ProcessorResponse.Status.ITEM_ERROR)) {
+            itemState.setItemStatus(item.getId(), ItemStatus.PROCESSED_ITEM_ERROR);
             metrics.counter("itemsProcessed.itemError").increment();
           }
         }
@@ -140,6 +156,7 @@ public class InMemoryPipelineRunner implements PipelineRunner {
     private long delay = DEFAULT_DELAY;
     private ErrorConfiguration errorConfiguration = new ErrorConfiguration();
     private Context context = null;
+    private PipelineItemState itemState = NoOpItemState.getInstance();
 
     private ItemFactory itemFactory;
     private PipelineDescriptor pipelineDescriptor;
@@ -156,6 +173,11 @@ public class InMemoryPipelineRunner implements PipelineRunner {
 
     public Builder withContext(Context context) {
       this.context = context;
+      return this;
+    }
+
+    public Builder withItemState(PipelineItemState itemState) {
+      this.itemState = itemState;
       return this;
     }
 
@@ -182,7 +204,8 @@ public class InMemoryPipelineRunner implements PipelineRunner {
               .withContext(context)
               .build(),
           itemFactory,
-          delay);
+          delay,
+          itemState);
     }
   }
 }
