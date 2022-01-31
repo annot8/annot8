@@ -282,11 +282,13 @@ public class SimplePipeline implements Pipeline {
 
   protected void remove(Processor processor) {
     processors.remove(processor);
+    processor.close();
   }
 
   protected void remove(Source source) {
     sourceIndex++;
     sources.remove(source);
+    source.close();
   }
 
   public void close() {

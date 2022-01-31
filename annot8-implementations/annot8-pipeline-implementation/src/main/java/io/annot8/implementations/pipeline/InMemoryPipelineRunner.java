@@ -16,6 +16,7 @@ import io.annot8.common.components.metering.Metering;
 import io.annot8.common.components.metering.Metrics;
 import io.annot8.common.components.metering.NoOpMetrics;
 import io.annot8.implementations.support.factories.QueueItemFactory;
+import java.io.IOException;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.slf4j.Logger;
@@ -34,11 +35,11 @@ public class InMemoryPipelineRunner implements PipelineRunner {
   private AtomicBoolean running = new AtomicBoolean(true);
   private long pipelineFinished = -1;
 
-  public InMemoryPipelineRunner(Pipeline pipeline, ItemFactory itemFactory) {
+  private InMemoryPipelineRunner(Pipeline pipeline, ItemFactory itemFactory) {
     this(pipeline, itemFactory, DEFAULT_DELAY);
   }
 
-  public InMemoryPipelineRunner(Pipeline pipeline, ItemFactory itemFactory, long delay) {
+  private InMemoryPipelineRunner(Pipeline pipeline, ItemFactory itemFactory, long delay) {
     this.pipeline = pipeline;
     this.logger =
         pipeline
@@ -90,9 +91,8 @@ public class InMemoryPipelineRunner implements PipelineRunner {
 
         if (optItem.isPresent()) {
           ProcessorResponse response =
-              metrics
-                  .timer("itemProcessingTime")
-                  .record(() -> pipeline.process(optItem.get())); // Gives time in seconds
+              // Gives time in seconds
+              metrics.timer("itemProcessingTime").record(() -> pipeline.process(optItem.get()));
 
           metrics.counter("itemsProcessed").increment();
 
@@ -118,6 +118,13 @@ public class InMemoryPipelineRunner implements PipelineRunner {
           logger.debug("Sleep interrupted - {}", e.getMessage());
         }
       }
+    }
+
+    try {
+      logger.info("Pipeline {} closing", pipeline.getName());
+      pipeline.close();
+    } catch (IOException ce) {
+      logger.debug("Close error - {}", ce.getMessage());
     }
 
     pipelineFinished = System.currentTimeMillis();

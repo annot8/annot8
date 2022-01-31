@@ -4,6 +4,7 @@ package io.annot8.implementations.pipeline;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -20,6 +21,8 @@ import io.annot8.api.data.Item;
 import io.annot8.api.data.ItemFactory;
 import io.annot8.api.pipelines.PipelineDescriptor;
 import java.util.Arrays;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Test;
 import org.mockito.stubbing.Answer;
 
@@ -83,6 +86,7 @@ public class InMemoryPipelineDescriptorRunnerTest {
 
     SourceDescriptor sd1 = mock(SourceDescriptor.class);
     when(sd1.create(any(Context.class))).thenReturn(source1);
+
     SourceDescriptor sd2 = mock(SourceDescriptor.class);
     when(sd2.create(any(Context.class))).thenReturn(source2);
 
@@ -112,12 +116,18 @@ public class InMemoryPipelineDescriptorRunnerTest {
     verify(processor1, times(5)).process(any());
     verify(processor2, times(3)).process(any());
 
-    runner.stop();
     assertFalse(runner.isRunning());
+
+    verify(source1, times(1)).close();
+    verify(source2, times(1)).close();
+    verify(processor1, times(1)).close();
+    verify(processor2, times(1)).close();
   }
 
   @Test
-  public void testOnThread() {
+  public void testOnThread() throws InterruptedException {
+    CountDownLatch countDownLatch = new CountDownLatch(2);
+
     ItemFactory itemFactory = mock(ItemFactory.class);
     when(itemFactory.create()).thenReturn(mock(Item.class));
 
@@ -153,6 +163,13 @@ public class InMemoryPipelineDescriptorRunnerTest {
                   invocationOnMock.getArgument(0, ItemFactory.class).create();
                   return SourceResponse.done();
                 });
+    doAnswer(
+            invocation -> {
+              countDownLatch.countDown();
+              return null;
+            })
+        .when(source1)
+        .close();
 
     Processor processor1 = mock(Processor.class);
     when(processor1.process(any()))
@@ -162,6 +179,13 @@ public class InMemoryPipelineDescriptorRunnerTest {
             ProcessorResponse.ok(),
             ProcessorResponse.ok(),
             ProcessorResponse.ok());
+    doAnswer(
+            invocation -> {
+              countDownLatch.countDown();
+              return null;
+            })
+        .when(processor1)
+        .close();
 
     SourceDescriptor sd1 = mock(SourceDescriptor.class);
     when(sd1.create(any(Context.class))).thenReturn(source1);
@@ -186,5 +210,6 @@ public class InMemoryPipelineDescriptorRunnerTest {
     assertTrue(runner.isRunning());
     runner.stop();
     assertFalse(runner.isRunning());
+    countDownLatch.await(1000, TimeUnit.MILLISECONDS);
   }
 }
