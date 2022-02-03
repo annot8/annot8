@@ -20,6 +20,7 @@ import io.annot8.common.components.metering.Metrics;
 import io.annot8.common.components.metering.NoOpMetrics;
 import io.annot8.implementations.support.factories.QueueItemFactory;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,7 +35,7 @@ public class InMemoryPipelineRunner implements PipelineRunner {
   private final long delay;
   private final PipelineItemState itemState;
 
-  private boolean running = true;
+  private AtomicBoolean running = new AtomicBoolean(true);
   private long pipelineFinished = -1;
 
   public InMemoryPipelineRunner(Pipeline pipeline, ItemFactory itemFactory) {
@@ -75,14 +76,14 @@ public class InMemoryPipelineRunner implements PipelineRunner {
   @Override
   public void run() {
     logger.info("Pipeline {} started", pipeline.getName());
-    running = true;
+    running.set(true);
 
     Long startTime =
         metrics.gauge(
             "runTime", // Convert from milliseconds to seconds
             System.currentTimeMillis(),
             t -> {
-              if (running) {
+              if (running.get()) {
                 return (System.currentTimeMillis() - t) / 1000.0;
               } else {
                 // Once the pipeline has finished, don't continue to increment the runTime
@@ -91,10 +92,10 @@ public class InMemoryPipelineRunner implements PipelineRunner {
             });
     logger.debug("Pipeline {} started at {}", pipeline.getName(), startTime);
 
-    while (running) {
+    while (running.get()) {
       SourceResponse sr = pipeline.read(itemFactory);
 
-      while (running && !itemFactory.isEmpty()) {
+      while (running.get() && !itemFactory.isEmpty()) {
         Optional<Item> optItem = itemFactory.next();
 
         if (optItem.isPresent()) {
@@ -145,11 +146,11 @@ public class InMemoryPipelineRunner implements PipelineRunner {
 
   public void stop() {
     logger.info("Stopping pipeline after current item/source");
-    running = false;
+    running.set(false);
   }
 
   public boolean isRunning() {
-    return running;
+    return running.get();
   }
 
   public static class Builder {

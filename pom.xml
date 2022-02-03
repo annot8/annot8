@@ -60,7 +60,7 @@
     <maven.compiler.target>${java.version}</maven.compiler.target>
 
     <!-- Annot8 API Version -->
-    <annot8.version>1.2-SNAPSHOT</annot8.version>
+    <annot8-api.version>1.2-SNAPSHOT</annot8-api.version>
 
     <!-- Core utitities and helpers -->
     <jsonapi.version>2.0.1</jsonapi.version>
@@ -251,7 +251,7 @@
       <dependency>
         <groupId>io.annot8</groupId>
         <artifactId>annot8-api</artifactId>
-        <version>${annot8.version}</version>
+        <version>${annot8-api.version}</version>
       </dependency>
       <!-- Common -->
       <dependency>
