@@ -16,6 +16,7 @@ public class DefaultItemFactory implements ItemFactory {
 
   @Override
   public Item create(Item parent, String id) {
-    return new DefaultItem(id, parent == null ? null : parent.getId(), this, contentBuilderFactoryRegistry);
+    return new DefaultItem(
+        id, parent == null ? null : parent.getId(), this, contentBuilderFactoryRegistry);
   }
 }

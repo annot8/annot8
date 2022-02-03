@@ -34,24 +34,38 @@ public class TestItem implements Item {
   private final ItemFactory itemFactory;
 
   public TestItem() {
-    this(new TestItemFactory(), new TestGroupStore(), new TestContentBuilderFactoryRegistry(), null, null);
+    this(
+        new TestItemFactory(),
+        new TestGroupStore(),
+        new TestContentBuilderFactoryRegistry(),
+        null,
+        null);
   }
 
   public TestItem(String parentId) {
-    this(new TestItemFactory(), new TestGroupStore(), new TestContentBuilderFactoryRegistry(), parentId, null);
+    this(
+        new TestItemFactory(),
+        new TestGroupStore(),
+        new TestContentBuilderFactoryRegistry(),
+        parentId,
+        null);
   }
 
-
   public TestItem(String parentId, String id) {
-    this(new TestItemFactory(), new TestGroupStore(), new TestContentBuilderFactoryRegistry(), parentId, id);
+    this(
+        new TestItemFactory(),
+        new TestGroupStore(),
+        new TestContentBuilderFactoryRegistry(),
+        parentId,
+        id);
   }
 
   public TestItem(
-    ItemFactory itemFactory,
-    GroupStore groupStore,
-    ContentBuilderFactoryRegistry contentBuilderFactoryRegistry,
-    String parentId,
-    String id) {
+      ItemFactory itemFactory,
+      GroupStore groupStore,
+      ContentBuilderFactoryRegistry contentBuilderFactoryRegistry,
+      String parentId,
+      String id) {
     this.itemFactory = itemFactory;
     this.id = id == null ? UUID.randomUUID().toString() : id;
     this.parentId = parentId;

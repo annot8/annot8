@@ -32,8 +32,7 @@ public class DefaultItem implements Item {
   private boolean discarded = false;
 
   public DefaultItem(
-      ItemFactory itemFactory,
-      ContentBuilderFactoryRegistry contentBuilderFactoryRegistry) {
+      ItemFactory itemFactory, ContentBuilderFactoryRegistry contentBuilderFactoryRegistry) {
     this(null, itemFactory, contentBuilderFactoryRegistry);
   }
 
