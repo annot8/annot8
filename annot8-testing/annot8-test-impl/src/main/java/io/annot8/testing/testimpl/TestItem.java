@@ -34,40 +34,40 @@ public class TestItem implements Item {
   private final ItemFactory itemFactory;
 
   public TestItem() {
-    this(new TestGroupStore());
+    this(
+        new TestItemFactory(),
+        new TestGroupStore(),
+        new TestContentBuilderFactoryRegistry(),
+        null,
+        null);
   }
 
   public TestItem(String parentId) {
-    this(new TestGroupStore(), parentId);
+    this(
+        new TestItemFactory(),
+        new TestGroupStore(),
+        new TestContentBuilderFactoryRegistry(),
+        parentId,
+        null);
   }
 
-  public TestItem(GroupStore groupStore) {
-    this(groupStore, new TestContentBuilderFactoryRegistry());
-  }
-
-  public TestItem(GroupStore groupStore, String parentId) {
-    this(groupStore, new TestContentBuilderFactoryRegistry(), parentId);
-  }
-
-  public TestItem(
-      GroupStore groupStore, ContentBuilderFactoryRegistry contentBuilderFactoryRegistry) {
-    this(groupStore, contentBuilderFactoryRegistry, null);
-  }
-
-  public TestItem(
-      GroupStore groupStore,
-      ContentBuilderFactoryRegistry contentBuilderFactoryRegistry,
-      String parentId) {
-    this(new TestItemFactory(), groupStore, contentBuilderFactoryRegistry, parentId);
+  public TestItem(String parentId, String id) {
+    this(
+        new TestItemFactory(),
+        new TestGroupStore(),
+        new TestContentBuilderFactoryRegistry(),
+        parentId,
+        id);
   }
 
   public TestItem(
       ItemFactory itemFactory,
       GroupStore groupStore,
       ContentBuilderFactoryRegistry contentBuilderFactoryRegistry,
-      String parentId) {
+      String parentId,
+      String id) {
     this.itemFactory = itemFactory;
-    this.id = UUID.randomUUID().toString();
+    this.id = id == null ? UUID.randomUUID().toString() : id;
     this.parentId = parentId;
     this.properties = new TestProperties();
     this.groups = groupStore;

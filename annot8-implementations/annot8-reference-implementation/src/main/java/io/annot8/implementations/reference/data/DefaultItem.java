@@ -32,19 +32,27 @@ public class DefaultItem implements Item {
   private boolean discarded = false;
 
   public DefaultItem(
+      ItemFactory itemFactory, ContentBuilderFactoryRegistry contentBuilderFactoryRegistry) {
+    this(null, itemFactory, contentBuilderFactoryRegistry);
+  }
+
+  public DefaultItem(
+      String parentId,
+      ItemFactory itemFactory,
+      ContentBuilderFactoryRegistry contentBuilderFactoryRegistry) {
+    this(null, parentId, itemFactory, contentBuilderFactoryRegistry);
+  }
+
+  public DefaultItem(
+      String id,
       String parentId,
       ItemFactory itemFactory,
       ContentBuilderFactoryRegistry contentBuilderFactoryRegistry) {
     this.parentId = parentId;
     this.itemFactory = itemFactory;
-    this.id = UUID.randomUUID().toString();
+    this.id = id == null ? UUID.randomUUID().toString() : id;
     this.contentBuilderFactoryRegistry = contentBuilderFactoryRegistry;
     this.groups = new DefaultGroupStore(this);
-  }
-
-  public DefaultItem(
-      ItemFactory itemFactory, ContentBuilderFactoryRegistry contentBuilderFactoryRegistry) {
-    this(null, itemFactory, contentBuilderFactoryRegistry);
   }
 
   public Optional<String> getParent() {

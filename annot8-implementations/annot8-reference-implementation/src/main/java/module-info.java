@@ -1,9 +1,9 @@
 open module io.annot8.implementations.reference {
-  requires io.annot8.api;
+  requires transitive io.annot8.api;
   requires transitive io.annot8.implementations.support;
   requires transitive io.annot8.common.utils;
   requires transitive io.annot8.common.data;
-  requires java.desktop;
+  requires transitive java.desktop;
 
   exports io.annot8.implementations.reference.annotations;
   exports io.annot8.implementations.reference.content;
