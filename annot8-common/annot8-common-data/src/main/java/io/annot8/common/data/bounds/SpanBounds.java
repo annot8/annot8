@@ -92,7 +92,10 @@ public class SpanBounds implements Bounds {
         long bytesBegin = framesBegin * frameSize;
         long framesEnd = Math.min(ais.getFrameLength(), end);
 
-        ais.skip(bytesBegin);
+        long skipped = ais.skip(bytesBegin);
+        if (skipped != bytesBegin) {
+          throw new IOException("Could not skip to position " + bytesBegin + " in audio stream");
+        }
 
         @SuppressWarnings("unchecked") // This is checked R = AudioInputStream.class
         R r = (R) new AudioInputStream(ais, ais.getFormat(), framesEnd - framesBegin);
@@ -115,8 +118,11 @@ public class SpanBounds implements Bounds {
       String s = (String) data;
       return begin >= 0 && end <= s.length();
     } else if (data instanceof AudioInputStream) {
-      AudioInputStream ais = (AudioInputStream) data;
-      return begin >= 0 && end <= ais.getFrameLength();
+      try (AudioInputStream ais = (AudioInputStream) data) {
+        return begin >= 0 && end <= ais.getFrameLength();
+      } catch (IOException e) {
+        return false;
+      }
     }
 
     return false;
