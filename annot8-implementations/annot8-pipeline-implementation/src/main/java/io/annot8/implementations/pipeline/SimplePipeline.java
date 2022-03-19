@@ -288,17 +288,19 @@ public class SimplePipeline implements Pipeline {
 
   protected void remove(Processor processor) {
     processors.remove(processor);
+    processor.close();
   }
 
   protected void remove(Source source) {
     int idx = sources.indexOf(source);
     sources.set(idx, null);
+    source.close();
   }
 
   public void close() {
-    sources.stream().forEach(Source::close);
-    processors.stream().forEach(Processor::close);
-    context.getResources().forEach(Resource::close);
+    sources.stream().filter(Objects::nonNull).forEach(Source::close);
+    processors.stream().filter(Objects::nonNull).forEach(Processor::close);
+    context.getResources().filter(Objects::nonNull).forEach(Resource::close);
   }
 
   public static class Builder implements Pipeline.Builder {

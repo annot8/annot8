@@ -19,6 +19,7 @@ import io.annot8.common.components.metering.Metering;
 import io.annot8.common.components.metering.Metrics;
 import io.annot8.common.components.metering.NoOpMetrics;
 import io.annot8.implementations.support.factories.QueueItemFactory;
+import java.io.IOException;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.slf4j.Logger;
@@ -36,16 +37,24 @@ public class InMemoryPipelineRunner implements PipelineRunner {
   private final PipelineItemState itemState;
 
   private AtomicBoolean running = new AtomicBoolean(true);
+
+  @SuppressWarnings("java:S1450")
   private long pipelineFinished = -1;
 
+  /** @deprecated Will becode private, use builder instead */
+  @Deprecated(since = "1.2.2", forRemoval = true)
   public InMemoryPipelineRunner(Pipeline pipeline, ItemFactory itemFactory) {
     this(pipeline, itemFactory, DEFAULT_DELAY);
   }
 
+  /** @deprecated Will becode private, use builder instead */
+  @Deprecated(since = "1.2.2", forRemoval = true)
   public InMemoryPipelineRunner(Pipeline pipeline, ItemFactory itemFactory, long delay) {
     this(pipeline, itemFactory, delay, NoOpItemState.getInstance());
   }
 
+  /** @deprecated Will becode private, use builder instead */
+  @Deprecated(since = "1.2.2", forRemoval = true)
   public InMemoryPipelineRunner(
       Pipeline pipeline, ItemFactory itemFactory, long delay, PipelineItemState itemState) {
     this.pipeline = pipeline;
@@ -102,10 +111,9 @@ public class InMemoryPipelineRunner implements PipelineRunner {
           Item item = optItem.get();
 
           itemState.setItemStatus(item.getId(), ItemStatus.PROCESSING);
+          // Gives time in seconds
           ProcessorResponse response =
-              metrics
-                  .timer("itemProcessingTime")
-                  .record(() -> pipeline.process(item)); // Gives time in seconds
+              metrics.timer("itemProcessingTime").record(() -> pipeline.process(item));
 
           metrics.counter("itemsProcessed").increment();
 
@@ -134,6 +142,13 @@ public class InMemoryPipelineRunner implements PipelineRunner {
           logger.debug("Sleep interrupted - {}", e.getMessage());
         }
       }
+    }
+
+    try {
+      logger.info("Pipeline {} closing", pipeline.getName());
+      pipeline.close();
+    } catch (IOException ce) {
+      logger.debug("Close error - {}", ce.getMessage());
     }
 
     pipelineFinished = System.currentTimeMillis();
