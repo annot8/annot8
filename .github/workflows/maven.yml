@@ -6,9 +6,13 @@ name: Java CI with Maven
 on:
   workflow_dispatch:
   push:
-    branches: [master]
+    branches:
+      - main
+      - develop
   pull_request:
-    branches: [master]
+    branches:
+      - main
+      - develop
 
 concurrency:
   group: ${{ github.ref }}-${{ github.head_ref }}
