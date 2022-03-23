@@ -25,9 +25,11 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Set up JDK
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v2
         with:
-          java-version: 11
+          distribution: "temurin"
+          java-version: "11"
+          cache: "maven"
       - run: mvn -B speedy-spotless:check
       - run: mvn -B clean org.jacoco:jacoco-maven-plugin:prepare-agent package
       - run: mvn -B jacoco:report
