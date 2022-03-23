@@ -100,8 +100,7 @@ public class SimplePipeline implements Pipeline {
 
       if (source == null) continue;
 
-      logger.debug(
-          "[{}] Reading source {} [{}] for new items", getName(), source.toString(), sourceIndex);
+      logger.debug("[{}] Reading source {} [{}] for new items", getName(), source, sourceIndex);
       SourceResponse response =
           metrics
               .timer("source[" + sourceIndex + "].readTime", "class", source.getClass().getName())
@@ -119,7 +118,7 @@ public class SimplePipeline implements Pipeline {
           logger.info(
               "[{}] Finished reading all items from source {} [{}]",
               getName(),
-              source.toString(),
+              source,
               sourceIndex);
 
           remove(source);
@@ -137,14 +136,14 @@ public class SimplePipeline implements Pipeline {
               logger.error(
                   "[{}] Source {} [{}] returned an error, which has been ignored",
                   getName(),
-                  source.toString(),
+                  source,
                   sourceIndex);
               continue;
             case REMOVE_SOURCE:
               logger.error(
                   "[{}] Source {} [{}] returned an error and will be removed from the pipeline",
                   getName(),
-                  source.toString(),
+                  source,
                   sourceIndex);
               remove(source);
               break;
@@ -186,7 +185,7 @@ public class SimplePipeline implements Pipeline {
           "[{}] Processing item {} using processor {} [{}]",
           getName(),
           item.getId(),
-          processor.toString(),
+          processor,
           idx);
 
       response =
@@ -204,7 +203,7 @@ public class SimplePipeline implements Pipeline {
           logger.error(
               "[{}] Processor {} [{}] returned an item error whilst processing the current item {}, which has been ignored",
               getName(),
-              processor.toString(),
+              processor,
               idx,
               item.getId());
         } else if (errorConfiguration.getOnItemError()
@@ -212,7 +211,7 @@ public class SimplePipeline implements Pipeline {
           logger.error(
               "[{}] Processor {} [{}] returned an item error whilst processing the current item {}, and the item will not be processed by the remainder of the pipeline",
               getName(),
-              processor.toString(),
+              processor,
               idx,
               item.getId());
           break;
@@ -221,7 +220,7 @@ public class SimplePipeline implements Pipeline {
           logger.error(
               "[{}] Processor {} [{}] returned an item error whilst processing the current item {}, and the processor will be removed from the pipeline",
               getName(),
-              processor.toString(),
+              processor,
               idx,
               item.getId());
           erroring.add(processor);
@@ -243,7 +242,7 @@ public class SimplePipeline implements Pipeline {
           logger.error(
               "[{}] Processor {} [{}] returned a processor error whilst processing the current item {}, which has been ignored",
               getName(),
-              processor.toString(),
+              processor,
               idx,
               item.getId());
         } else if (errorConfiguration.getOnProcessorError()
@@ -251,7 +250,7 @@ public class SimplePipeline implements Pipeline {
           logger.error(
               "[{}] Processor {} [{}] returned a processor error whilst processing the current item {}, and the item will not be processed by the remainder of the pipeline",
               getName(),
-              processor.toString(),
+              processor,
               idx,
               item.getId());
           break;
@@ -260,7 +259,7 @@ public class SimplePipeline implements Pipeline {
           logger.error(
               "[{}] Processor {} [{}] returned a processor error whilst processing the current item {}, and the processor will be removed from the pipeline",
               getName(),
-              processor.toString(),
+              processor,
               idx,
               item.getId());
           erroring.add(processor);
@@ -460,10 +459,6 @@ public class SimplePipeline implements Pipeline {
                 })
             .map(Processor.class::cast)
             .forEach(this::withProcessor);
-
-        if (name == null) {
-          name = descriptor.getName();
-        }
 
         if (description == null) {
           description = descriptor.getDescription();
