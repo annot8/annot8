@@ -18,7 +18,7 @@ public abstract class AbstractComponent implements Annot8Component {
   private Metrics metrics;
 
   /** Create component with default logging and metrics */
-  public AbstractComponent() {
+  protected AbstractComponent() {
     this(null, null);
   }
 
@@ -27,7 +27,7 @@ public abstract class AbstractComponent implements Annot8Component {
    *
    * @param context the context
    */
-  public AbstractComponent(Context context) {
+  protected AbstractComponent(Context context) {
     this(
         context.getResource(Logging.class).orElse(null),
         context.getResource(Metering.class).orElse(null));
@@ -39,7 +39,7 @@ public abstract class AbstractComponent implements Annot8Component {
    * @param logging logging to use
    * @param metering metering to use
    */
-  public AbstractComponent(Logging logging, Metering metering) {
+  protected AbstractComponent(Logging logging, Metering metering) {
     logger = logging != null ? logging.getLogger(this.getClass()) : null;
     metrics = metering != null ? metering.getMetrics(this.getClass()) : null;
   }
