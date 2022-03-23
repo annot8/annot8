@@ -136,12 +136,7 @@ class InMemoryPipelineRunnerTest {
         .thenAnswer(
             (Answer<SourceResponse>)
                 invocationOnMock -> {
-                  // Add delay
-                  try {
-                    Thread.sleep(100);
-                  } catch (Exception e) {
-                    e.printStackTrace();
-                  }
+                  addDelay();
                   invocationOnMock.getArgument(0, ItemFactory.class).create();
                   return SourceResponse.ok();
                 })
@@ -149,11 +144,7 @@ class InMemoryPipelineRunnerTest {
             (Answer<SourceResponse>)
                 invocationOnMock -> {
                   // Add delay
-                  try {
-                    Thread.sleep(100);
-                  } catch (Exception e) {
-                    e.printStackTrace();
-                  }
+                  addDelay();
                   invocationOnMock.getArgument(0, ItemFactory.class).create();
                   return SourceResponse.ok();
                 })
@@ -211,5 +202,9 @@ class InMemoryPipelineRunnerTest {
     runner.stop();
     assertFalse(runner.isRunning());
     countDownLatch.await(1000, TimeUnit.MILLISECONDS);
+  }
+
+  private void addDelay() throws InterruptedException {
+    new CountDownLatch(1).await(100, TimeUnit.MILLISECONDS);
   }
 }

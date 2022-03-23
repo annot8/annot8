@@ -140,6 +140,7 @@ public class InMemoryPipelineRunner implements PipelineRunner {
           Thread.sleep(delay);
         } catch (InterruptedException e) {
           logger.debug("Sleep interrupted - {}", e.getMessage());
+          Thread.currentThread().interrupt();
         }
       }
     }
