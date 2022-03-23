@@ -160,11 +160,13 @@ public class InMemoryPipelineRunner implements PipelineRunner {
         (pipelineFinished - startTime) / 1000.0);
   }
 
+  @Override
   public void stop() {
     logger.info("Stopping pipeline after current item/source");
     running.set(false);
   }
 
+  @Override
   public boolean isRunning() {
     return running.get();
   }

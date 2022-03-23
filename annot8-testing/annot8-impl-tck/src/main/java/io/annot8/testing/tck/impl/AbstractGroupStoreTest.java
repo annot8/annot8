@@ -1,6 +1,15 @@
 /* Annot8 (annot8.io) - Licensed under Apache-2.0. */
 package io.annot8.testing.tck.impl;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import io.annot8.api.annotations.Annotation;
 import io.annot8.api.annotations.Group;
 import io.annot8.api.data.Content;
@@ -11,22 +20,19 @@ import io.annot8.api.stores.GroupStore;
 import io.annot8.implementations.support.properties.MapMutableProperties;
 import io.annot8.implementations.support.stores.AnnotationStoreFactory;
 import io.annot8.testing.testimpl.TestAnnotation;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
-import org.mockito.Mockito;
 
 public abstract class AbstractGroupStoreTest {
 
-  private static final String role = "test";
-  private static final String key = "key";
-  private static final String value = "value";
+  private static final String ROLE = "test";
+  private static final String KEY = "key";
+  private static final String VALUE = "value";
   private static final String TEST_ANNOTATION_ID = "TEST_ANNOTATION_ID";
   private static final String TEST_CONTENT_DESCRIPTION = "TEST_CONTENT_DESCRIPTION";
 
@@ -50,17 +56,15 @@ public abstract class AbstractGroupStoreTest {
     Annotation annotation = getTestAnnotation();
     Group group = createTestGroup(groupStore, annotation);
 
-    Group copied = null;
     try {
-      copied = groupStore.copy(group).save();
+      Group copied = groupStore.copy(group).save();
+      assertNotEquals(group.getId(), copied.getId());
+      assertEquals(ROLE, copied.getType());
+      assertTrue(copied.getProperties().has(KEY));
+      assertEquals(VALUE, copied.getProperties().get(KEY).get());
     } catch (IncompleteException e) {
-      Assertions.fail("Failed to copy group.", e);
+      fail("Failed to copy group.", e);
     }
-
-    Assertions.assertNotEquals(group.getId(), copied.getId());
-    Assertions.assertEquals(role, copied.getType());
-    Assertions.assertTrue(copied.getProperties().has(key));
-    Assertions.assertEquals(value, copied.getProperties().get(key).get());
   }
 
   @Test
@@ -69,17 +73,15 @@ public abstract class AbstractGroupStoreTest {
     Annotation annotation = getTestAnnotation();
     Group group = createTestGroup(groupStore, annotation);
 
-    Group edit = null;
     try {
-      edit = groupStore.edit(group).save();
+      Group edit = groupStore.edit(group).save();
+      assertEquals(group.getId(), edit.getId());
+      assertEquals(ROLE, edit.getType());
+      assertTrue(edit.getProperties().has(KEY));
+      assertEquals(VALUE, edit.getProperties().get(KEY).get());
     } catch (IncompleteException e) {
-      Assertions.fail("Failed to copy group.", e);
+      fail("Failed to copy group.", e);
     }
-
-    Assertions.assertEquals(group.getId(), edit.getId());
-    Assertions.assertEquals(role, edit.getType());
-    Assertions.assertTrue(edit.getProperties().has(key));
-    Assertions.assertEquals(value, edit.getProperties().get(key).get());
   }
 
   @Test
@@ -87,23 +89,23 @@ public abstract class AbstractGroupStoreTest {
     GroupStore groupStore = getGroupStore(getTestItem());
     Group group = createTestGroup(groupStore, getTestAnnotation());
 
-    Assertions.assertEquals(1, groupStore.getAll().count());
+    assertEquals(1, groupStore.getAll().count());
 
     groupStore.delete(group);
 
-    Assertions.assertEquals(0, groupStore.getAll().count());
+    assertEquals(0, groupStore.getAll().count());
   }
 
   @Test
   public void testDeleteAll() {
     GroupStore groupStore = getGroupStore(getTestItem());
-    Group group = createTestGroup(groupStore, getTestAnnotation());
+    createTestGroup(groupStore, getTestAnnotation());
 
-    Assertions.assertEquals(1, groupStore.getAll().count());
+    assertEquals(1, groupStore.getAll().count());
 
     groupStore.deleteAll();
 
-    Assertions.assertEquals(0, groupStore.getAll().count());
+    assertEquals(0, groupStore.getAll().count());
   }
 
   @Test
@@ -111,8 +113,8 @@ public abstract class AbstractGroupStoreTest {
     GroupStore groupStore = getGroupStore(getTestItem());
     Group group = createTestGroup(groupStore, getTestAnnotation());
 
-    Assertions.assertEquals(1, groupStore.getAll().count());
-    Assertions.assertEquals(group.getId(), groupStore.getAll().findFirst().get().getId());
+    assertEquals(1, groupStore.getAll().count());
+    assertEquals(group.getId(), groupStore.getAll().findFirst().get().getId());
   }
 
   @Test
@@ -121,11 +123,11 @@ public abstract class AbstractGroupStoreTest {
     Group group = createTestGroup(groupStore, getTestAnnotation());
     groupStore.create().withType("wrongType").withAnnotation("testing", getTestAnnotation());
 
-    List<Group> byType = groupStore.getByType(role).collect(Collectors.toList());
-    Assertions.assertEquals(1, byType.size());
+    List<Group> byType = groupStore.getByType(ROLE).collect(Collectors.toList());
+    assertEquals(1, byType.size());
     Group group2 = byType.get(0);
-    Assertions.assertEquals(group.getId(), group2.getId());
-    Assertions.assertEquals(role, group2.getType());
+    assertEquals(group.getId(), group2.getId());
+    assertEquals(ROLE, group2.getType());
   }
 
   @Test
@@ -134,26 +136,24 @@ public abstract class AbstractGroupStoreTest {
     Group group = createTestGroup(groupStore, getTestAnnotation());
 
     Optional<Group> byId = groupStore.getById(group.getId());
-    Assertions.assertTrue(byId.isPresent());
+    assertTrue(byId.isPresent());
     Group retrieved = byId.get();
-    Assertions.assertEquals(group.getId(), retrieved.getId());
-    Assertions.assertEquals(group.getType(), retrieved.getType());
+    assertEquals(group.getId(), retrieved.getId());
+    assertEquals(group.getType(), retrieved.getType());
   }
 
   private Group createTestGroup(GroupStore store, Annotation annotation) {
-    Group group = null;
     try {
-      group =
-          store
-              .create()
-              .withAnnotation(role, annotation)
-              .withProperty(key, value)
-              .withType(role)
-              .save();
+      return store
+          .create()
+          .withAnnotation(ROLE, annotation)
+          .withProperty(KEY, VALUE)
+          .withType(ROLE)
+          .save();
     } catch (IncompleteException e) {
-      Assertions.fail("Failed to build group.", e);
+      fail("Failed to build group.", e);
+      throw e;
     }
-    return group;
   }
 
   private void testGroupBuilder(Group.Builder groupBuilder) {
@@ -164,45 +164,43 @@ public abstract class AbstractGroupStoreTest {
     String propVal1 = "val1";
     String propVal2 = "val2";
     String propVal3 = "val3";
-    Map<String, Object> properties = new HashMap<>();
-    properties.put(propKey1, propVal1);
-    properties.put(propKey2, propVal2);
+    Map<String, Object> properties = Map.of(propKey1, propVal1, propKey2, propVal2);
     Annotation annotation = getTestAnnotation();
 
-    Group group = null;
     try {
-      group =
+      Group group =
           groupBuilder
               .withType(groupType)
               .withProperties(new MapMutableProperties(properties))
               .withProperty(propKey3, propVal3)
               .withoutProperty(propKey1)
               .withoutProperty(propKey2, propVal2)
-              .withAnnotation(role, annotation)
+              .withAnnotation(ROLE, annotation)
               .save();
-    } catch (IncompleteException e) {
-      Assertions.fail("Group failed to build", e);
-    }
 
-    Assertions.assertEquals(groupType, group.getType());
-    Assertions.assertNotNull(group.getId());
-    Assertions.assertEquals(propVal3, group.getProperties().get(propKey3).get());
-    Assertions.assertFalse(group.getProperties().has(propVal1));
-    Assertions.assertFalse(group.getProperties().has(propVal2));
-    Map<String, Stream<Annotation>> groupAnnotationsMap = group.getAnnotations();
-    Assertions.assertTrue(groupAnnotationsMap.containsKey(role));
-    List<Annotation> annotationsList = groupAnnotationsMap.get(role).collect(Collectors.toList());
-    Assertions.assertEquals(1, annotationsList.size());
-    Assertions.assertEquals(annotation.getId(), annotationsList.get(0).getId());
+      assertEquals(groupType, group.getType());
+      assertNotNull(group.getId());
+      assertEquals(propVal3, group.getProperties().get(propKey3).get());
+      assertFalse(group.getProperties().has(propVal1));
+      assertFalse(group.getProperties().has(propVal2));
+      Map<String, Stream<Annotation>> groupAnnotationsMap = group.getAnnotations();
+      assertTrue(groupAnnotationsMap.containsKey(ROLE));
+      List<Annotation> annotationsList = groupAnnotationsMap.get(ROLE).collect(Collectors.toList());
+      assertEquals(1, annotationsList.size());
+      assertEquals(annotation.getId(), annotationsList.get(0).getId());
+    } catch (IncompleteException e) {
+      fail("Group failed to build", e);
+    }
   }
 
   private Item getTestItem() {
-    Item mock = Mockito.mock(Item.class);
-    Content mockContent = Mockito.mock(Content.class);
-    Mockito.when(mockContent.getId()).thenReturn("TEST_CONTENT_ID");
-    Mockito.when(mockContent.getDescription()).thenReturn(TEST_CONTENT_DESCRIPTION);
-    Mockito.when(mock.getId()).thenReturn("TEST_ITEM_ID");
-    Mockito.when(mock.getContent(ArgumentMatchers.eq(TEST_CONTENT_DESCRIPTION)))
+    Item mock = mock(Item.class);
+    @SuppressWarnings("unchecked")
+    Content<String> mockContent = mock(Content.class);
+    when(mockContent.getId()).thenReturn("TEST_CONTENT_ID");
+    when(mockContent.getDescription()).thenReturn(TEST_CONTENT_DESCRIPTION);
+    when(mock.getId()).thenReturn("TEST_ITEM_ID");
+    when(mock.getContent(ArgumentMatchers.eq(TEST_CONTENT_DESCRIPTION)))
         .thenReturn(Optional.of(mockContent));
 
     return mock;
@@ -216,12 +214,11 @@ public abstract class AbstractGroupStoreTest {
   }
 
   protected AnnotationStoreFactory getMockedAnnotationStoreFactory() {
-    AnnotationStoreFactory mock = Mockito.mock(AnnotationStoreFactory.class);
-    AnnotationStore mockedStore = Mockito.mock(AnnotationStore.class);
+    AnnotationStoreFactory mock = mock(AnnotationStoreFactory.class);
+    AnnotationStore mockedStore = mock(AnnotationStore.class);
 
-    Mockito.when(mockedStore.getById(TEST_ANNOTATION_ID))
-        .thenReturn(Optional.of(getTestAnnotation()));
-    Mockito.when(mock.create(ArgumentMatchers.any())).thenReturn(mockedStore);
+    when(mockedStore.getById(TEST_ANNOTATION_ID)).thenReturn(Optional.of(getTestAnnotation()));
+    when(mock.create(ArgumentMatchers.any())).thenReturn(mockedStore);
 
     return mock;
   }

@@ -36,7 +36,7 @@ public class RectangleBounds implements Bounds {
       BufferedImage bi = (BufferedImage) content.getData();
 
       BufferedImage subimage = bi.getSubimage(left, top, getWidth(), getHeight());
-      return Optional.of((R) subimage);
+      return Optional.of(requiredClass.cast(subimage));
     }
 
     return Optional.empty();
@@ -44,7 +44,7 @@ public class RectangleBounds implements Bounds {
 
   @Override
   public <D, C extends Content<D>> boolean isValid(C content) {
-    return Image.class.isInstance(content);
+    return content instanceof Image;
   }
 
   public int getBottom() {
