@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 import io.annot8.api.exceptions.Annot8RuntimeException;
@@ -74,8 +73,8 @@ class CellBoundsTest {
     Table table = Mockito.mock(Table.class);
     when(table.getRowCount()).thenReturn(2);
     when(table.getColumnCount()).thenReturn(2);
-    when(table.getRow(eq(0))).thenReturn(Optional.of(row));
-    when(table.getRow(eq(1))).thenReturn(Optional.empty());
+    when(table.getRow(0)).thenReturn(Optional.of(row));
+    when(table.getRow(1)).thenReturn(Optional.empty());
     when(content.getData()).thenReturn(table);
     return content;
   }

@@ -7,7 +7,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
@@ -206,10 +205,10 @@ class RowTest {
     when(row.getColumnNames()).thenReturn(Arrays.asList("test", "test2", "test3", "test4"));
     when(row.getColumnCount()).thenReturn(4);
 
-    when(row.getValueAt(eq(0))).thenReturn(Optional.of("test"));
-    when(row.getValueAt(eq(1))).thenReturn(Optional.of(1));
-    when(row.getValueAt(eq(2))).thenReturn(Optional.of("2"));
-    when(row.getValueAt(eq(3))).thenReturn(Optional.of(Long.MAX_VALUE));
+    when(row.getValueAt(0)).thenReturn(Optional.of("test"));
+    when(row.getValueAt(1)).thenReturn(Optional.of(1));
+    when(row.getValueAt(2)).thenReturn(Optional.of("2"));
+    when(row.getValueAt(3)).thenReturn(Optional.of(Long.MAX_VALUE));
 
     when(row.getValueAt(anyString())).thenCallRealMethod();
 

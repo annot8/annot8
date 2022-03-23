@@ -11,7 +11,6 @@ import io.annot8.api.data.Item;
 import io.annot8.api.stores.AnnotationStore;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 class DefaultAnnotationReferenceTest {
 
@@ -43,7 +42,7 @@ class DefaultAnnotationReferenceTest {
 
     when(item.getContent("content")).thenReturn(Optional.of(content));
     when(content.getAnnotations()).thenReturn(annotationStore);
-    when(annotationStore.getById(Mockito.eq("1"))).thenReturn(Optional.of(annotation));
+    when(annotationStore.getById("1")).thenReturn(Optional.of(annotation));
 
     assertEquals(annotation, reference.toAnnotation().get());
   }

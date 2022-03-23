@@ -4,7 +4,6 @@ package io.annot8.common.data.content;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -42,7 +41,7 @@ class TextTest {
 
   @Test
   void testTextTextNonEmpty() {
-    when(bounds.getData(eq(text), eq(String.class))).thenReturn(Optional.of("covered"));
+    when(bounds.getData(text, String.class)).thenReturn(Optional.of("covered"));
 
     Optional<String> output = text.getText(annotation);
     assertEquals("covered", output.get());
@@ -50,7 +49,7 @@ class TextTest {
 
   @Test
   void testTextTextEmpty() {
-    when(bounds.getData(eq(text), eq(String.class))).thenReturn(Optional.empty());
+    when(bounds.getData(text, String.class)).thenReturn(Optional.empty());
 
     Optional<String> output = text.getText(annotation);
     assertFalse(output.isPresent());
@@ -120,13 +119,13 @@ class TextTest {
   private Annotation getAnnotation(int begin, int end) {
     SpanBounds bounds = new SpanBounds(begin, end);
     Annotation annotation = mock(Annotation.class);
-    doReturn(Optional.of(bounds)).when(annotation).getBounds(Mockito.eq(SpanBounds.class));
+    doReturn(Optional.of(bounds)).when(annotation).getBounds(SpanBounds.class);
     return annotation;
   }
 
   private AnnotationStore getAnnotationStore(Annotation annotation) {
     AnnotationStore annotationStore = mock(AnnotationStore.class);
-    when(annotationStore.getByBounds(Mockito.eq(SpanBounds.class)))
+    when(annotationStore.getByBounds(SpanBounds.class))
         .thenAnswer((Answer<Stream<Annotation>>) invocation -> Stream.of(annotation));
     return annotationStore;
   }
