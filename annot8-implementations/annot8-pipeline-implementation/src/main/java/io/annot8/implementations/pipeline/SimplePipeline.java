@@ -1,6 +1,7 @@
 /* Annot8 (annot8.io) - Licensed under Apache-2.0. */
 package io.annot8.implementations.pipeline;
 
+import io.annot8.api.components.Annot8Component;
 import io.annot8.api.components.Processor;
 import io.annot8.api.components.Resource;
 import io.annot8.api.components.Source;
@@ -21,6 +22,7 @@ import io.annot8.common.components.metering.Metering;
 import io.annot8.common.components.metering.Metrics;
 import io.annot8.common.components.metering.NoOpMetrics;
 import io.annot8.implementations.support.context.SimpleContext;
+import io.micrometer.core.instrument.Timer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -102,9 +104,7 @@ public class SimplePipeline implements Pipeline {
 
       logger.debug("[{}] Reading source {} [{}] for new items", getName(), source, sourceIndex);
       SourceResponse response =
-          metrics
-              .timer("source[" + sourceIndex + "].readTime", "class", source.getClass().getName())
-              .record(() -> source.read(itemFactory));
+          timer(sourceIndex, source, "readTime").record(() -> source.read(itemFactory));
 
       switch (response.getStatus()) {
         case EMPTY:
@@ -112,9 +112,7 @@ public class SimplePipeline implements Pipeline {
           continue;
         case DONE:
           // Record metrics, remove source, and then move on to the next source
-          metrics
-              .counter("source[" + sourceIndex + "].done", "class", source.getClass().getName())
-              .increment();
+          count(sourceIndex, source, "done");
           logger.info(
               "[{}] Finished reading all items from source {} [{}]",
               getName(),
@@ -126,10 +124,7 @@ public class SimplePipeline implements Pipeline {
           continue;
         case SOURCE_ERROR:
           // Record metrics, handle error
-          metrics
-              .counter(
-                  "source[" + sourceIndex + "].sourceError", "class", source.getClass().getName())
-              .increment();
+          count(sourceIndex, source, "sourceError");
 
           switch (errorConfiguration.getOnSourceError()) {
             case IGNORE:
@@ -158,9 +153,7 @@ public class SimplePipeline implements Pipeline {
           break;
         case OK:
           // Record metrics
-          metrics
-              .counter("source[" + sourceIndex + "].ok", "class", source.getClass().getName())
-              .increment();
+          count(sourceIndex, source, "ok");
           break;
       }
 
@@ -188,16 +181,10 @@ public class SimplePipeline implements Pipeline {
           processor,
           idx);
 
-      response =
-          metrics
-              .timer(
-                  "processor[" + idx + "].processingTime", "class", processor.getClass().getName())
-              .record(() -> processor.process(item));
+      response = timer(idx, processor, "processingTime").record(() -> processor.process(item));
 
       if (response.getStatus() == ProcessorResponse.Status.ITEM_ERROR) {
-        metrics
-            .counter("processor[" + idx + "].itemError", "class", processor.getClass().getName())
-            .increment();
+        count(idx, processor, "itemError");
 
         if (errorConfiguration.getOnItemError() == ErrorConfiguration.OnProcessingError.IGNORE) {
           logger.error(
@@ -232,10 +219,7 @@ public class SimplePipeline implements Pipeline {
           }
         }
       } else if (response.getStatus() == ProcessorResponse.Status.PROCESSOR_ERROR) {
-        metrics
-            .counter(
-                "processor[" + idx + "].processorError", "class", processor.getClass().getName())
-            .increment();
+        count(idx, processor, "processorError");
 
         if (errorConfiguration.getOnProcessorError()
             == ErrorConfiguration.OnProcessingError.IGNORE) {
@@ -271,9 +255,7 @@ public class SimplePipeline implements Pipeline {
           }
         }
       } else {
-        metrics
-            .counter("processor[" + idx + "].ok", "class", processor.getClass().getName())
-            .increment();
+        count(idx, processor, "ok");
       }
 
       idx++;
@@ -300,6 +282,19 @@ public class SimplePipeline implements Pipeline {
     sources.stream().filter(Objects::nonNull).forEach(Source::close);
     processors.stream().filter(Objects::nonNull).forEach(Processor::close);
     context.getResources().filter(Objects::nonNull).forEach(Resource::close);
+  }
+
+  private Timer timer(int index, Annot8Component component, String type) {
+    String className = component.getClass().getName();
+    return metrics.timer(String.format("%s[%s].%s", className, index, type), "class", className);
+  }
+
+  private void count(int index, Annot8Component component, String type) {
+    String className = component.getClass().getName();
+    metrics
+        .counter(
+            String.format("%s[%s].%s", className, index, type).toLowerCase(), "class", className)
+        .increment();
   }
 
   public static class Builder implements Pipeline.Builder {
