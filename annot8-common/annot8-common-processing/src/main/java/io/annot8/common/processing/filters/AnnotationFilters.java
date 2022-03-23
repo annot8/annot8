@@ -22,15 +22,15 @@ public class AnnotationFilters {
   }
 
   public static Filter<Annotation> byProperty(String key) {
-    return new PropertyFilters.HasPropertyFilter<>(key, null, null);
+    return PropertyFilters.byProperty(key);
   }
 
   public static Filter<Annotation> byProperty(String key, Class<?> clazz) {
-    return new PropertyFilters.HasPropertyFilter<>(key, clazz, null);
+    return PropertyFilters.byProperty(key, clazz);
   }
 
   public static Filter<Annotation> byProperty(String key, Object value) {
-    return new PropertyFilters.HasPropertyFilter<>(key, null, value);
+    return PropertyFilters.byProperty(key, value);
   }
 
   public static Filter<Annotation> not(Filter<Annotation> filter) {
