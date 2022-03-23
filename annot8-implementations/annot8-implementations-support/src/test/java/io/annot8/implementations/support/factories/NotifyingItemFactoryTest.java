@@ -31,7 +31,7 @@ class NotifyingItemFactoryTest {
   private NotifyingItemFactory itemFactory;
 
   @BeforeEach
-  public void beforeEach() {
+  void beforeEach() {
 
     itemFactory = new NotifyingItemFactory(delegateItemFactory);
   }

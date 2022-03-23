@@ -8,9 +8,10 @@ import io.annot8.api.pipelines.ItemStatus;
 import io.annot8.api.pipelines.PipelineItemState;
 import org.junit.jupiter.api.Test;
 
-public class SimplePipelineItemStateTest {
+class SimplePipelineItemStateTest {
+
   @Test
-  public void test() {
+  void test() {
     PipelineItemState pih = new SimplePipelineItemState();
 
     assertEquals(0, pih.getAll().size());

@@ -8,10 +8,10 @@ import io.annot8.api.properties.ImmutableProperties;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 
-public class MapImmutablePropertiesTest {
+class MapImmutablePropertiesTest {
 
   @Test
-  public void testImmutableProperties() throws IncompleteException {
+  void testImmutableProperties() throws IncompleteException {
     ImmutableProperties props1 =
         new MapImmutableProperties.Builder()
             .withProperty("key1", "Hello World")
@@ -21,18 +21,35 @@ public class MapImmutablePropertiesTest {
 
     ImmutableProperties props2 =
         new MapImmutableProperties.Builder()
-            .withProperty(
-                "key3",
-                false) // This will be removed as from(...) creates an exact copy of the parameter
+            .withProperty("key3", false) // This
+            // will
+            // be
+            // removed
+            // as
+            // from(...)
+            // creates
+            // an
+            // exact
+            // copy
+            // of
+            // the
+            // parameter
             .from(props1)
             .save();
     testMap(props2.getAll());
 
     ImmutableProperties props3 =
         new MapImmutableProperties.Builder()
-            .withProperty(
-                "key3",
-                false) // This won't be removed, as withProperties(...) adds to existing properties
+            .withProperty("key3", false) // This
+            // won't
+            // be
+            // removed,
+            // as
+            // withProperties(...)
+            // adds
+            // to
+            // existing
+            // properties
             .withProperty("key1", "To be overwritten")
             .withProperties(props1)
             .save();

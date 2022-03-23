@@ -19,7 +19,7 @@ class AnnotationFiltersTest {
   TestAnnotationStore store;
 
   @BeforeEach
-  public void beforeEach() {
+  void beforeEach() {
     store = new TestAnnotationStore(new TestStringContent());
     store.save(new TestAnnotation("1", "c", "t1", new PositionBounds(1)));
     store.save(new TestAnnotation("2", "c", "t1", new PositionBounds(2)));

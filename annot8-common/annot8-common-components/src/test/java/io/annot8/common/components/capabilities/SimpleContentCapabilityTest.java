@@ -7,16 +7,17 @@ import io.annot8.api.capabilities.ContentCapability;
 import io.annot8.common.data.content.Text;
 import org.junit.jupiter.api.Test;
 
-public class SimpleContentCapabilityTest {
+class SimpleContentCapabilityTest {
+
   @Test
-  public void testGetters() {
+  void testGetters() {
     ContentCapability cc = new SimpleContentCapability(Text.class);
 
     assertEquals(Text.class, cc.getType());
   }
 
   @Test
-  public void testEqualAndHashCode() {
+  void testEqualAndHashCode() {
     ContentCapability cc1 = new SimpleContentCapability(Text.class);
     ContentCapability cc2 = new SimpleContentCapability(Text.class);
 

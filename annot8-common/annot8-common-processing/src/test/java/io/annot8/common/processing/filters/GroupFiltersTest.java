@@ -49,33 +49,33 @@ class GroupFiltersTest {
   }
 
   @Test
-  public void byType() {
+  void byType() {
 
     assertThat(filter(GroupFilters.byType("gt1"))).containsExactly("g1");
   }
 
   @Test
-  public void byPropertyKey() {
+  void byPropertyKey() {
     assertThat(filter(GroupFilters.byProperty("test"))).containsExactly("g2", "g3");
   }
 
   @Test
-  public void byPropertyKeyClass() {
+  void byPropertyKeyClass() {
     assertThat(filter(GroupFilters.byProperty("test", String.class))).containsExactly("g2");
   }
 
   @Test
-  public void byPropertyKeyValue() {
+  void byPropertyKeyValue() {
     assertThat(filter(GroupFilters.byProperty("test", 3))).containsExactly("g3");
   }
 
   @Test
-  public void hasRoles() {
+  void hasRoles() {
     assertThat(filter(GroupFilters.hasRoles("r2"))).containsExactly("g1", "g2");
   }
 
   @Test
-  public void includesAnnotation() {
+  void includesAnnotation() {
     assertThat(filter(GroupFilters.includesAnnotation(AnnotationFilters.byType("t1"))))
         .containsExactly("g1");
   }

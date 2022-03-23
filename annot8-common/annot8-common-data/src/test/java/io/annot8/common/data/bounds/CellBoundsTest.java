@@ -17,10 +17,10 @@ import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-public class CellBoundsTest {
+class CellBoundsTest {
 
   @Test
-  public void testCellBounds() {
+  void testCellBounds() {
     CellBounds bounds = new CellBounds(1, 1);
 
     assertEquals(1, bounds.getRow());
@@ -32,7 +32,7 @@ public class CellBoundsTest {
   }
 
   @Test
-  public void testGetData() {
+  void testGetData() {
     CellBounds bounds = new CellBounds(0, 0);
     Optional<String> data = bounds.getData(getTestTableContent(), String.class);
 
@@ -41,7 +41,7 @@ public class CellBoundsTest {
   }
 
   @Test
-  public void testGetDataCastError() {
+  void testGetDataCastError() {
     CellBounds bounds = new CellBounds(0, 0);
     assertThrows(
         ClassCastException.class,
@@ -50,7 +50,7 @@ public class CellBoundsTest {
   }
 
   @Test
-  public void testGetDataNoRow() {
+  void testGetDataNoRow() {
     CellBounds bounds = new CellBounds(1, 0);
     assertThrows(
         Annot8RuntimeException.class,
@@ -59,7 +59,7 @@ public class CellBoundsTest {
   }
 
   @Test
-  public void testGetDataInvalidBounds() {
+  void testGetDataInvalidBounds() {
     CellBounds bounds = new CellBounds(-1, -1);
     assertFalse(
         bounds.getData(getTestTableContent(), String.class).isPresent(),

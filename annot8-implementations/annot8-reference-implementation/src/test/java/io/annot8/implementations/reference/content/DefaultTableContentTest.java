@@ -15,10 +15,10 @@ import io.annot8.testing.testimpl.TestItem;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-public class DefaultTableContentTest {
+class DefaultTableContentTest {
 
   @Test
-  public void testBuilder() {
+  void testBuilder() {
     BuilderFactory factory = new BuilderFactory();
     Builder<TableContent, Table> builder = factory.create(new TestItem());
 

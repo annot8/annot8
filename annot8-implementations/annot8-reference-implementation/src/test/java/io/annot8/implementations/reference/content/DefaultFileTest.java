@@ -13,10 +13,10 @@ import io.annot8.testing.testimpl.TestItem;
 import java.io.File;
 import org.junit.jupiter.api.Test;
 
-public class DefaultFileTest {
+class DefaultFileTest {
 
   @Test
-  public void testBuilderFactory() {
+  void testBuilderFactory() {
     BuilderFactory factory = new BuilderFactory();
     assertNotNull(factory.create(new TestItem()));
     assertBasicBuilderUsage(factory.create(new TestItem()));

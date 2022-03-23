@@ -15,19 +15,19 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import org.junit.jupiter.api.Test;
 
-public class DefaultUriTest {
+class DefaultUriTest {
 
   private static final String URL = "https://www.test.co.uk";
 
   @Test
-  public void testDefaultURLBuilderFactory() {
+  void testDefaultURLBuilderFactory() {
     BuilderFactory factory = new DefaultUri.BuilderFactory();
     Builder<UriContent, URI> defaultURLBuilder = factory.create(new TestItem());
     assertNotNull(defaultURLBuilder);
   }
 
   @Test
-  public void testDefaultURLBuilder() {
+  void testDefaultURLBuilder() {
     BuilderFactory builderFactory = new BuilderFactory();
     Builder<UriContent, URI> urlContentBuilder = builderFactory.create(new TestItem());
 
@@ -60,7 +60,7 @@ public class DefaultUriTest {
   }
 
   @Test
-  public void testDefaultURLBuilderFillsArgs() {
+  void testDefaultURLBuilderFillsArgs() {
     BuilderFactory builderFactory = new BuilderFactory();
     Builder<UriContent, URI> urlContentBuilder = builderFactory.create(new TestItem());
 

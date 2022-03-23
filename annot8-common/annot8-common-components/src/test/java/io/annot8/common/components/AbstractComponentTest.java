@@ -12,10 +12,10 @@ import org.junit.jupiter.api.Test;
  * Unit tests to ensure the AbstractComponent implementation provides the correct resources to the
  * implementing class
  */
-public class AbstractComponentTest {
+class AbstractComponentTest {
 
   @Test
-  public void testAbstractComponent() {
+  void testAbstractComponent() {
     TestComponent component = new TestComponent();
     component.process(null);
     component.close();

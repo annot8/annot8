@@ -15,7 +15,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-public class SimplePipelineDescriptorTest {
+class SimplePipelineDescriptorTest {
 
   private final String PIPELINE_NAME = "Test pipeline";
   private final String PIPELINE_DESCRIPTION = "Simple test pipeline";
@@ -25,7 +25,7 @@ public class SimplePipelineDescriptorTest {
   @Mock private ProcessorDescriptor testProcessor2;
 
   @Test
-  public void test() {
+  void test() {
     PipelineDescriptor p =
         new SimplePipelineDescriptor.Builder()
             .withName(PIPELINE_NAME)
@@ -42,7 +42,7 @@ public class SimplePipelineDescriptorTest {
   }
 
   @Test
-  public void testNoName() {
+  void testNoName() {
     PipelineDescriptor.Builder pb =
         new SimplePipelineDescriptor.Builder()
             .withDescription(PIPELINE_DESCRIPTION)
@@ -53,7 +53,7 @@ public class SimplePipelineDescriptorTest {
   }
 
   @Test
-  public void testNoSource() {
+  void testNoSource() {
     PipelineDescriptor.Builder pb =
         new SimplePipelineDescriptor.Builder()
             .withName(PIPELINE_NAME)
@@ -64,7 +64,7 @@ public class SimplePipelineDescriptorTest {
   }
 
   @Test
-  public void testNoProcessor() {
+  void testNoProcessor() {
     PipelineDescriptor.Builder pb =
         new SimplePipelineDescriptor.Builder()
             .withName(PIPELINE_NAME)
@@ -75,7 +75,7 @@ public class SimplePipelineDescriptorTest {
   }
 
   @Test
-  public void testFrom() {
+  void testFrom() {
     PipelineDescriptor p =
         new SimplePipelineDescriptor.Builder()
             .withName(PIPELINE_NAME)
@@ -94,7 +94,7 @@ public class SimplePipelineDescriptorTest {
   }
 
   @Test
-  public void testProcessorsArgs() {
+  void testProcessorsArgs() {
     PipelineDescriptor p =
         new SimplePipelineDescriptor.Builder()
             .withName(PIPELINE_NAME)
@@ -110,7 +110,7 @@ public class SimplePipelineDescriptorTest {
   }
 
   @Test
-  public void testProcessorsCollection() {
+  void testProcessorsCollection() {
     PipelineDescriptor p =
         new SimplePipelineDescriptor.Builder()
             .withName(PIPELINE_NAME)

@@ -8,23 +8,23 @@ import io.micrometer.core.instrument.MeterRegistry;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-public class MeteringTest {
+class MeteringTest {
 
   @Test
-  public void testMetering() {
+  void testMetering() {
     Metrics metrics = Metering.useGlobalRegistry("test").getMetrics(TestProcessor.class);
     assertNotNull(metrics);
   }
 
   @Test
-  public void testUseMeterRegistry() {
+  void testUseMeterRegistry() {
     MeterRegistry registry = Mockito.mock(MeterRegistry.class);
     Metrics metrics = Metering.useMeterRegistry(registry, "test").getMetrics(TestProcessor.class);
     assertNotNull(metrics);
   }
 
   @Test
-  public void testNotAvailable() {
+  void testNotAvailable() {
     Metrics metrics = Metering.notAvailable().getMetrics(TestProcessor.class);
     assertNotNull(metrics);
   }

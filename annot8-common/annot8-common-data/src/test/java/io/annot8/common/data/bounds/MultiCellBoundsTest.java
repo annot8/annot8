@@ -16,10 +16,10 @@ import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-public class MultiCellBoundsTest {
+class MultiCellBoundsTest {
 
   @Test
-  public void testMultiCellBounds() {
+  void testMultiCellBounds() {
     MultiCellBounds bounds = new MultiCellBounds(0, new int[] {0, 1});
 
     assertEquals(0, bounds.getCells()[0]);
@@ -29,14 +29,14 @@ public class MultiCellBoundsTest {
   }
 
   @Test
-  public void testInvalidMultiCellBounds() {
+  void testInvalidMultiCellBounds() {
     MultiCellBounds bounds = new MultiCellBounds(0, new int[] {0, 1, 2});
 
     assertFalse(bounds.isValid(getTestTableContent()));
   }
 
   @Test
-  public void testGetData() {
+  void testGetData() {
     MultiCellBounds bounds = new MultiCellBounds(0, new int[] {0, 1});
     Optional<MultiCellData> optional = bounds.getData(getTestTableContent(), MultiCellData.class);
 
@@ -55,7 +55,7 @@ public class MultiCellBoundsTest {
   }
 
   @Test
-  public void testDataInvalidRequest() {
+  void testDataInvalidRequest() {
     MultiCellBounds bounds = new MultiCellBounds(0, new int[] {1, 2});
     assertFalse(bounds.getData(getTestTableContent(), Object.class).isPresent());
   }

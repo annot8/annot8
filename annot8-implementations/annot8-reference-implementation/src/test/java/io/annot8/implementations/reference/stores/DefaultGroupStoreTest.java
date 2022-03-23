@@ -12,10 +12,10 @@ import io.annot8.testing.testimpl.TestItem;
 import io.annot8.testing.testimpl.content.TestStringContent;
 import org.junit.jupiter.api.Test;
 
-public class DefaultGroupStoreTest {
+class DefaultGroupStoreTest {
 
   @Test
-  public void testInMemoryAnnotationStore() throws IncompleteException {
+  void testInMemoryAnnotationStore() throws IncompleteException {
 
     TestItem item = new TestItem();
     GroupStore store = new DefaultGroupStore(item);

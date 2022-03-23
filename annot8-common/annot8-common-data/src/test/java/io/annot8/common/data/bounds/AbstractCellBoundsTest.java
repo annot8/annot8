@@ -13,10 +13,10 @@ import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-public class AbstractCellBoundsTest {
+class AbstractCellBoundsTest {
 
   @Test
-  public void testIsValid() {
+  void testIsValid() {
     AbstractCellBounds bounds =
         new AbstractCellBounds() {
           @Override
@@ -34,7 +34,7 @@ public class AbstractCellBoundsTest {
   }
 
   @Test
-  public void testIsCellReferenceValid() {
+  void testIsCellReferenceValid() {
     AbstractCellBounds bounds =
         new AbstractCellBounds() {
           @Override

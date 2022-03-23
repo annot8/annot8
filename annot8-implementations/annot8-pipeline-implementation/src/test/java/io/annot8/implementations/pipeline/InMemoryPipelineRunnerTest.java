@@ -26,10 +26,10 @@ import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Test;
 import org.mockito.stubbing.Answer;
 
-public class InMemoryPipelineRunnerTest {
+class InMemoryPipelineRunnerTest {
 
   @Test
-  public void test() {
+  void test() {
     ItemFactory itemFactory = mock(ItemFactory.class);
     when(itemFactory.create()).thenReturn(mock(Item.class));
 
@@ -125,7 +125,7 @@ public class InMemoryPipelineRunnerTest {
   }
 
   @Test
-  public void testOnThread() throws InterruptedException {
+  void testOnThread() throws InterruptedException {
     CountDownLatch countDownLatch = new CountDownLatch(2);
 
     ItemFactory itemFactory = mock(ItemFactory.class);

@@ -13,10 +13,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import org.junit.jupiter.api.Test;
 
-public class SimpleCapabilitiesTest {
+class SimpleCapabilitiesTest {
 
   @Test
-  public void test() {
+  void test() {
     AnnotationCapability ac1 = mock(AnnotationCapability.class);
     AnnotationCapability ac2 = mock(AnnotationCapability.class);
 
@@ -48,7 +48,7 @@ public class SimpleCapabilitiesTest {
   }
 
   @Test
-  public void testBuilderFrom() {
+  void testBuilderFrom() {
     AnnotationCapability ac1 = mock(AnnotationCapability.class);
     AnnotationCapability ac2 = mock(AnnotationCapability.class);
 

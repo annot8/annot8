@@ -13,18 +13,18 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import org.junit.jupiter.api.Test;
 
-public class DefaultInputStreamTest {
+class DefaultInputStreamTest {
 
   Item item = new TestItem();
 
   @Test
-  public void testBuilderFactory() {
+  void testBuilderFactory() {
     BuilderFactory factory = new BuilderFactory();
     assertNotNull(factory.create(new TestItem()));
   }
 
   @Test
-  public void testBuilder() {
+  void testBuilder() {
     Builder builder = new Builder(item);
     DefaultInputStream content =
         builder.create(
@@ -48,7 +48,7 @@ public class DefaultInputStreamTest {
   }
 
   @Test
-  public void testNonSupplierError() {
+  void testNonSupplierError() {
     Builder builder = new Builder(item);
     assertThrows(
         Annot8RuntimeException.class,
