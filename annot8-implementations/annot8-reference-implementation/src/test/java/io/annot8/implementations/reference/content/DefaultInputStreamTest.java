@@ -11,6 +11,7 @@ import io.annot8.testing.testimpl.TestConstants;
 import io.annot8.testing.testimpl.TestItem;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import org.junit.jupiter.api.Test;
 
 class DefaultInputStreamTest {
@@ -50,8 +51,7 @@ class DefaultInputStreamTest {
   @Test
   void testNonSupplierError() {
     Builder builder = new Builder(item);
-    assertThrows(
-        Annot8RuntimeException.class,
-        () -> builder.withData(new ByteArrayInputStream("test".getBytes())));
+    InputStream inputStream = new ByteArrayInputStream("test".getBytes());
+    assertThrows(Annot8RuntimeException.class, () -> builder.withData(inputStream));
   }
 }

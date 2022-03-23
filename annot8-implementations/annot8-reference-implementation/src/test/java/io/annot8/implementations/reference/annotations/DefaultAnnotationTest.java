@@ -40,8 +40,7 @@ class DefaultAnnotationTest {
   @Test
   void testIncompleteBuilderNoContent() {
     assertThrows(
-        IncompleteException.class,
-        () -> new Builder(null).withType("Test").withBounds(bounds).save());
+        IncompleteException.class, new Builder(null).withType("Test").withBounds(bounds)::save);
   }
 
   @Test
@@ -148,17 +147,18 @@ class DefaultAnnotationTest {
             .save();
 
     assertEquals(a1.getId(), a2.getId());
-    assertEquals(a2.getType(), "TEST2");
-    assertEquals(a2.getBounds(), otherBounds);
+    assertEquals("TEST2", a2.getType());
+    assertEquals(otherBounds, a2.getBounds());
 
     // Check that a1 is unchecked
-    assertEquals(a1.getType(), TestConstants.ANNOTATION_TYPE);
-    assertEquals(a1.getBounds(), bounds);
+    assertEquals(TestConstants.ANNOTATION_TYPE, a1.getType());
+    assertEquals(bounds, a1.getBounds());
   }
 
   @Test
   void testProperties() {
-    WithPropertiesBuilderTestUtils utils = new WithPropertiesBuilderTestUtils();
+    WithPropertiesBuilderTestUtils<Annotation, Annotation.Builder> utils =
+        new WithPropertiesBuilderTestUtils<>();
     Annotation.Builder builder =
         new Builder(TestConstants.CONTENT_ID).withType("TEST").withBounds(bounds);
     utils.testWithPropertiesBuilder(builder);
@@ -166,7 +166,7 @@ class DefaultAnnotationTest {
 
   @Test
   void testWithIdBuilder() {
-    WithIdBuilderTestUtils utils = new WithIdBuilderTestUtils();
+    WithIdBuilderTestUtils<Annotation, Annotation.Builder> utils = new WithIdBuilderTestUtils<>();
     Annotation.Builder builder =
         new Builder(TestConstants.CONTENT_ID).withType("TEST").withBounds(bounds);
     utils.testWithIdBuilder(builder);
