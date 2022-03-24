@@ -61,7 +61,7 @@ public abstract class AbstractGroupStoreTest {
       assertNotEquals(group.getId(), copied.getId());
       assertEquals(ROLE, copied.getType());
       assertTrue(copied.getProperties().has(KEY));
-      assertEquals(VALUE, copied.getProperties().get(KEY).get());
+      assertEquals(VALUE, copied.getProperties().get(KEY).orElseThrow());
     } catch (IncompleteException e) {
       fail("Failed to copy group.", e);
     }
@@ -78,7 +78,7 @@ public abstract class AbstractGroupStoreTest {
       assertEquals(group.getId(), edit.getId());
       assertEquals(ROLE, edit.getType());
       assertTrue(edit.getProperties().has(KEY));
-      assertEquals(VALUE, edit.getProperties().get(KEY).get());
+      assertEquals(VALUE, edit.getProperties().get(KEY).orElseThrow());
     } catch (IncompleteException e) {
       fail("Failed to copy group.", e);
     }
@@ -114,7 +114,7 @@ public abstract class AbstractGroupStoreTest {
     Group group = createTestGroup(groupStore, getTestAnnotation());
 
     assertEquals(1, groupStore.getAll().count());
-    assertEquals(group.getId(), groupStore.getAll().findFirst().get().getId());
+    assertEquals(group.getId(), groupStore.getAll().findFirst().orElseThrow().getId());
   }
 
   @Test
@@ -180,7 +180,7 @@ public abstract class AbstractGroupStoreTest {
 
       assertEquals(groupType, group.getType());
       assertNotNull(group.getId());
-      assertEquals(propVal3, group.getProperties().get(propKey3).get());
+      assertEquals(propVal3, group.getProperties().get(propKey3).orElseThrow());
       assertFalse(group.getProperties().has(propVal1));
       assertFalse(group.getProperties().has(propVal2));
       Map<String, Stream<Annotation>> groupAnnotationsMap = group.getAnnotations();

@@ -40,22 +40,22 @@ class PropertyFiltersTest {
   }
 
   @Test
-  public void byPropertyKey() {
+  void byPropertyKey() {
     assertThat(filter(PropertyFilters.byProperty("test"))).containsExactly("2", "3", "4", "5");
   }
 
   @Test
-  public void byPropertyKeyClass() {
+  void byPropertyKeyClass() {
     assertThat(filter(PropertyFilters.byProperty("test", String.class))).containsExactly("3", "5");
   }
 
   @Test
-  public void byPropertyKeyValue() {
+  void byPropertyKeyValue() {
     assertThat(filter(PropertyFilters.byProperty("test", 3))).isEmpty();
   }
 
   @Test
-  public void byOtherPropertyKeyValue() {
+  void byOtherPropertyKeyValue() {
     assertThat(filter(PropertyFilters.byProperty("other", "b"))).containsExactly("5");
   }
 
