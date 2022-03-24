@@ -90,6 +90,9 @@
     <maven-release-plugin.version>2.5.3</maven-release-plugin.version>
     <githook-maven-plugin.version>1.0.5</githook-maven-plugin.version>
     <sign-maven-plugin.version>1.0.1</sign-maven-plugin.version>
+
+    <!-- Sonar -->
+    <sonar.coverage.exclusions>**/io/annot8/testing/**</sonar.coverage.exclusions>
   </properties>
 
   <dependencies>
