@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 import io.annot8.common.data.content.Row;
@@ -16,10 +15,10 @@ import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-public class MultiCellBoundsTest {
+class MultiCellBoundsTest {
 
   @Test
-  public void testMultiCellBounds() {
+  void testMultiCellBounds() {
     MultiCellBounds bounds = new MultiCellBounds(0, new int[] {0, 1});
 
     assertEquals(0, bounds.getCells()[0]);
@@ -29,14 +28,14 @@ public class MultiCellBoundsTest {
   }
 
   @Test
-  public void testInvalidMultiCellBounds() {
+  void testInvalidMultiCellBounds() {
     MultiCellBounds bounds = new MultiCellBounds(0, new int[] {0, 1, 2});
 
     assertFalse(bounds.isValid(getTestTableContent()));
   }
 
   @Test
-  public void testGetData() {
+  void testGetData() {
     MultiCellBounds bounds = new MultiCellBounds(0, new int[] {0, 1});
     Optional<MultiCellData> optional = bounds.getData(getTestTableContent(), MultiCellData.class);
 
@@ -55,7 +54,7 @@ public class MultiCellBoundsTest {
   }
 
   @Test
-  public void testDataInvalidRequest() {
+  void testDataInvalidRequest() {
     MultiCellBounds bounds = new MultiCellBounds(0, new int[] {1, 2});
     assertFalse(bounds.getData(getTestTableContent(), Object.class).isPresent());
   }
@@ -71,8 +70,8 @@ public class MultiCellBoundsTest {
     Table table = Mockito.mock(Table.class);
     when(table.getRowCount()).thenReturn(2);
     when(table.getColumnCount()).thenReturn(2);
-    when(table.getRow(eq(0))).thenReturn(Optional.of(row));
-    when(table.getRow(eq(1))).thenReturn(Optional.empty());
+    when(table.getRow(0)).thenReturn(Optional.of(row));
+    when(table.getRow(1)).thenReturn(Optional.empty());
     when(content.getData()).thenReturn(table);
     return content;
   }

@@ -7,9 +7,10 @@ import io.annot8.api.capabilities.AnnotationCapability;
 import io.annot8.common.data.bounds.NoBounds;
 import org.junit.jupiter.api.Test;
 
-public class SimpleAnnotationCapabilityTest {
+class SimpleAnnotationCapabilityTest {
+
   @Test
-  public void testGetters() {
+  void testGetters() {
     AnnotationCapability ac = new SimpleAnnotationCapability("test", NoBounds.class);
 
     assertEquals("test", ac.getType());
@@ -17,7 +18,7 @@ public class SimpleAnnotationCapabilityTest {
   }
 
   @Test
-  public void testEqualAndHashCode() {
+  void testEqualAndHashCode() {
     AnnotationCapability ac1 = new SimpleAnnotationCapability("test", NoBounds.class);
     AnnotationCapability ac2 = new SimpleAnnotationCapability("test", NoBounds.class);
 

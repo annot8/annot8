@@ -11,6 +11,7 @@ import jakarta.json.bind.JsonbBuilder;
 import jakarta.json.bind.JsonbConfig;
 import org.junit.jupiter.api.Test;
 
+@SuppressWarnings("java:S5786") // public modifier required
 public class Annot8ComponentDescriptorDeserializerTest {
 
   @Test

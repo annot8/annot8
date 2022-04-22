@@ -6,10 +6,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.Collections;
 import org.junit.jupiter.api.Test;
 
-public class TableMetadataTest {
+class TableMetadataTest {
 
   @Test
-  public void testTableMetadata() {
+  void testTableMetadata() {
     ColumnMetadata columnMetadata = new ColumnMetadata("test", 0);
     TableMetadata metadata =
         new TableMetadata("test", "test", Collections.singletonList(columnMetadata), 1);

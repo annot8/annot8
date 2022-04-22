@@ -7,7 +7,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
@@ -15,10 +14,10 @@ import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-public class RowTest {
+class RowTest {
 
   @Test
-  public void testGetColumnName() {
+  void testGetColumnName() {
     Row row = getTestRow();
 
     Optional<String> column1 = row.getColumnName(0);
@@ -42,7 +41,7 @@ public class RowTest {
   }
 
   @Test
-  public void testGetString() {
+  void testGetString() {
     Row row = getTestRow();
 
     Optional<String> value1 = row.getString(0);
@@ -62,7 +61,7 @@ public class RowTest {
   }
 
   @Test
-  public void testGetInt() {
+  void testGetInt() {
     Row row = getTestRow();
 
     Optional<Integer> value1 = row.getInt(0);
@@ -79,7 +78,7 @@ public class RowTest {
   }
 
   @Test
-  public void testGetLong() {
+  void testGetLong() {
     Row row = getTestRow();
 
     Optional<Long> value1 = row.getLong(0);
@@ -97,7 +96,7 @@ public class RowTest {
   }
 
   @Test
-  public void testGetDouble() {
+  void testGetDouble() {
     Row row = getTestRow();
 
     Optional<Double> value1 = row.getDouble(0);
@@ -115,7 +114,7 @@ public class RowTest {
   }
 
   @Test
-  public void testGetStringWithColumnName() {
+  void testGetStringWithColumnName() {
     Row row = getTestRow();
 
     Optional<String> value1 = row.getString("test");
@@ -127,7 +126,7 @@ public class RowTest {
   }
 
   @Test
-  public void testGetIntWithColumnName() {
+  void testGetIntWithColumnName() {
     Row row = getTestRow();
 
     Optional<Integer> value1 = row.getInt("test2");
@@ -139,7 +138,7 @@ public class RowTest {
   }
 
   @Test
-  public void testGetLongWithColumnName() {
+  void testGetLongWithColumnName() {
     Row row = getTestRow();
 
     Optional<Long> value1 = row.getLong("test4");
@@ -151,7 +150,7 @@ public class RowTest {
   }
 
   @Test
-  public void testGetDoubleWithColumnName() {
+  void testGetDoubleWithColumnName() {
     Row row = getTestRow();
 
     Optional<Double> value1 = row.getDouble("test4");
@@ -163,7 +162,7 @@ public class RowTest {
   }
 
   @Test
-  public void testGetIndex() {
+  void testGetIndex() {
     Row row = getTestRow();
 
     Optional<Integer> value1 = row.getIndex("test");
@@ -176,7 +175,7 @@ public class RowTest {
   }
 
   @Test
-  public void testGetObject() {
+  void testGetObject() {
     Row row = getTestRow();
 
     Optional<String> value1 = row.getObject(0, String.class);
@@ -191,7 +190,7 @@ public class RowTest {
   }
 
   @Test
-  public void testGetObjectWithColumnName() {
+  void testGetObjectWithColumnName() {
     Row row = getTestRow();
     Optional<String> value1 = row.getObject("test", String.class);
     Optional<String> value2 = row.getObject("nonExistentColumn", String.class);
@@ -206,10 +205,10 @@ public class RowTest {
     when(row.getColumnNames()).thenReturn(Arrays.asList("test", "test2", "test3", "test4"));
     when(row.getColumnCount()).thenReturn(4);
 
-    when(row.getValueAt(eq(0))).thenReturn(Optional.of("test"));
-    when(row.getValueAt(eq(1))).thenReturn(Optional.of(1));
-    when(row.getValueAt(eq(2))).thenReturn(Optional.of("2"));
-    when(row.getValueAt(eq(3))).thenReturn(Optional.of(Long.MAX_VALUE));
+    when(row.getValueAt(0)).thenReturn(Optional.of("test"));
+    when(row.getValueAt(1)).thenReturn(Optional.of(1));
+    when(row.getValueAt(2)).thenReturn(Optional.of("2"));
+    when(row.getValueAt(3)).thenReturn(Optional.of(Long.MAX_VALUE));
 
     when(row.getValueAt(anyString())).thenCallRealMethod();
 

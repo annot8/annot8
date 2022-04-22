@@ -11,10 +11,10 @@ import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 
-public class DefaultRowTest {
+class DefaultRowTest {
 
   @Test
-  public void testDefaultRow() {
+  void testDefaultRow() {
     int index = 1;
     List<String> columnNames = Arrays.asList("test", "test2");
     List<Object> data = Arrays.asList(new Object[] {1, "test"});
@@ -34,7 +34,7 @@ public class DefaultRowTest {
   }
 
   @Test
-  public void testGetValueAtOutOfBounds() {
+  void testGetValueAtOutOfBounds() {
     DefaultRow row =
         new DefaultRow(1, Collections.singletonList("Test"), Collections.singletonList("Test"));
 

@@ -20,15 +20,15 @@ public abstract class AbstractTestContent<D> implements Content<D> {
 
   private Supplier<D> data;
 
-  public AbstractTestContent(Item item, Class<D> dataClass) {
+  protected AbstractTestContent(Item item, Class<D> dataClass) {
     this(item, dataClass, TestConstants.CONTENT_DESCRIPTION);
   }
 
-  public AbstractTestContent(Item item, Class<D> dataClass, String description) {
+  protected AbstractTestContent(Item item, Class<D> dataClass, String description) {
     this(item, dataClass, UUID.randomUUID().toString(), description, new TestProperties());
   }
 
-  public AbstractTestContent(
+  protected AbstractTestContent(
       Item item,
       Class<D> dataClass,
       String id,
@@ -37,7 +37,7 @@ public abstract class AbstractTestContent<D> implements Content<D> {
     this(item, dataClass, id, description, properties, (D) null);
   }
 
-  public AbstractTestContent(
+  protected AbstractTestContent(
       Item item,
       Class<D> dataClass,
       String id,
@@ -47,7 +47,7 @@ public abstract class AbstractTestContent<D> implements Content<D> {
     this(item, dataClass, TestAnnotationStore::new, id, description, properties, data);
   }
 
-  public AbstractTestContent(
+  protected AbstractTestContent(
       Item item,
       Class<D> dataClass,
       AnnotationStoreFactory annotationStoreFactory,
@@ -65,7 +65,7 @@ public abstract class AbstractTestContent<D> implements Content<D> {
     this.annotations = annotationStoreFactory.create(this);
   }
 
-  public AbstractTestContent(
+  protected AbstractTestContent(
       Item item,
       Class<D> dataClass,
       String id,

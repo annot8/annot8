@@ -10,15 +10,15 @@ public class PropertyFilters {
     // Singleton
   }
 
-  public static Filter<? extends WithProperties> byProperty(String key) {
+  public static <T extends WithProperties> Filter<T> byProperty(String key) {
     return new HasPropertyFilter<>(key, null, null);
   }
 
-  public static Filter<? extends WithProperties> byProperty(String key, Class<?> clazz) {
+  public static <T extends WithProperties> Filter<T> byProperty(String key, Class<?> clazz) {
     return new HasPropertyFilter<>(key, clazz, null);
   }
 
-  public static Filter<? extends WithProperties> byProperty(String key, Object value) {
+  public static <T extends WithProperties> Filter<T> byProperty(String key, Object value) {
     return new HasPropertyFilter<>(key, null, value);
   }
 

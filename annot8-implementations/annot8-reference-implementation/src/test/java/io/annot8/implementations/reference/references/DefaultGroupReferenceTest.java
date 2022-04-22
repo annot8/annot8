@@ -10,7 +10,6 @@ import io.annot8.api.data.Item;
 import io.annot8.api.stores.GroupStore;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 class DefaultGroupReferenceTest {
 
@@ -37,7 +36,7 @@ class DefaultGroupReferenceTest {
     assertEquals("1", reference.getGroupId());
 
     when(item.getGroups()).thenReturn(groupStore);
-    when(groupStore.getById(Mockito.eq("1"))).thenReturn(Optional.of(group));
+    when(groupStore.getById("1")).thenReturn(Optional.of(group));
 
     assertEquals(group, reference.toGroup().get());
   }

@@ -16,36 +16,35 @@ import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 
-public class DefaultAnnotationTest {
+class DefaultAnnotationTest {
 
   private final Bounds bounds = new TestBounds();
 
   @Test
-  public void testIncompleteBuilderNothingSet() {
+  void testIncompleteBuilderNothingSet() {
     assertThrows(IncompleteException.class, new Builder(TestConstants.CONTENT_ID)::save);
   }
 
   @Test
-  public void testIncompleteBuilderNoBounds() {
+  void testIncompleteBuilderNoBounds() {
     assertThrows(
         IncompleteException.class, new Builder(TestConstants.CONTENT_ID).withType("TEST")::save);
   }
 
   @Test
-  public void testIncompleteBuilderNoType() {
+  void testIncompleteBuilderNoType() {
     assertThrows(
         IncompleteException.class, new Builder(TestConstants.CONTENT_ID).withBounds(bounds)::save);
   }
 
   @Test
-  public void testIncompleteBuilderNoContent() {
+  void testIncompleteBuilderNoContent() {
     assertThrows(
-        IncompleteException.class,
-        () -> new Builder(null).withType("Test").withBounds(bounds).save());
+        IncompleteException.class, new Builder(null).withType("Test").withBounds(bounds)::save);
   }
 
   @Test
-  public void testMinimal() throws IncompleteException {
+  void testMinimal() throws IncompleteException {
     Annotation a1 =
         new DefaultAnnotation.Builder(TestConstants.CONTENT_ID)
             .withType("TEST")
@@ -59,7 +58,7 @@ public class DefaultAnnotationTest {
   }
 
   @Test
-  public void testWithProperty() throws IncompleteException {
+  void testWithProperty() throws IncompleteException {
     Annotation a2 =
         new DefaultAnnotation.Builder(TestConstants.CONTENT_ID)
             .withType(TestConstants.ANNOTATION_TYPE)
@@ -74,7 +73,7 @@ public class DefaultAnnotationTest {
   }
 
   @Test
-  public void testWithProperties() throws IncompleteException {
+  void testWithProperties() throws IncompleteException {
     Map<String, Object> properties2 = new HashMap<>();
     properties2.put("key1", 17);
     properties2.put("key2", false);
@@ -92,7 +91,7 @@ public class DefaultAnnotationTest {
   }
 
   @Test
-  public void testFromExisting() throws IncompleteException {
+  void testFromExisting() throws IncompleteException {
     Annotation a1 =
         new DefaultAnnotation.Builder(TestConstants.CONTENT_ID)
             .withType(TestConstants.ANNOTATION_TYPE)
@@ -119,7 +118,7 @@ public class DefaultAnnotationTest {
   }
 
   @Test
-  public void testFromExistingWithNewId() throws IncompleteException {
+  void testFromExistingWithNewId() throws IncompleteException {
     Annotation a1 =
         new DefaultAnnotation.Builder(TestConstants.CONTENT_ID)
             .withType(TestConstants.ANNOTATION_TYPE)
@@ -132,7 +131,7 @@ public class DefaultAnnotationTest {
   }
 
   @Test
-  public void testFromExistingOverridden() throws IncompleteException {
+  void testFromExistingOverridden() throws IncompleteException {
     Annotation a1 =
         new DefaultAnnotation.Builder(TestConstants.CONTENT_ID)
             .withType(TestConstants.ANNOTATION_TYPE)
@@ -148,25 +147,26 @@ public class DefaultAnnotationTest {
             .save();
 
     assertEquals(a1.getId(), a2.getId());
-    assertEquals(a2.getType(), "TEST2");
-    assertEquals(a2.getBounds(), otherBounds);
+    assertEquals("TEST2", a2.getType());
+    assertEquals(otherBounds, a2.getBounds());
 
     // Check that a1 is unchecked
-    assertEquals(a1.getType(), TestConstants.ANNOTATION_TYPE);
-    assertEquals(a1.getBounds(), bounds);
+    assertEquals(TestConstants.ANNOTATION_TYPE, a1.getType());
+    assertEquals(bounds, a1.getBounds());
   }
 
   @Test
-  public void testProperties() {
-    WithPropertiesBuilderTestUtils utils = new WithPropertiesBuilderTestUtils();
+  void testProperties() {
+    WithPropertiesBuilderTestUtils<Annotation, Annotation.Builder> utils =
+        new WithPropertiesBuilderTestUtils<>();
     Annotation.Builder builder =
         new Builder(TestConstants.CONTENT_ID).withType("TEST").withBounds(bounds);
     utils.testWithPropertiesBuilder(builder);
   }
 
   @Test
-  public void testWithIdBuilder() {
-    WithIdBuilderTestUtils utils = new WithIdBuilderTestUtils();
+  void testWithIdBuilder() {
+    WithIdBuilderTestUtils<Annotation, Annotation.Builder> utils = new WithIdBuilderTestUtils<>();
     Annotation.Builder builder =
         new Builder(TestConstants.CONTENT_ID).withType("TEST").withBounds(bounds);
     utils.testWithIdBuilder(builder);

@@ -6,10 +6,10 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 
-public class ConversionUtilsTest {
+class ConversionUtilsTest {
 
   @Test
-  public void testToInt() {
+  void testToInt() {
     Optional<Integer> testIntValue = ConversionUtils.toInt(Optional.of(1));
     Optional<Integer> testLongValue = ConversionUtils.toInt(Optional.of(Long.MAX_VALUE));
     Optional<Integer> testDoubleValue = ConversionUtils.toInt(Optional.of(1.2));
@@ -33,7 +33,7 @@ public class ConversionUtilsTest {
   }
 
   @Test
-  public void testToLong() {
+  void testToLong() {
     Optional<Long> testIntValue = ConversionUtils.toLong(Optional.of(1));
     Optional<Long> testLongValue = ConversionUtils.toLong(Optional.of(Long.MAX_VALUE));
     Optional<Long> testDoubleValue = ConversionUtils.toLong(Optional.of(1.2));
@@ -57,7 +57,7 @@ public class ConversionUtilsTest {
   }
 
   @Test
-  public void testToDouble() {
+  void testToDouble() {
     Optional<Double> testIntValue = ConversionUtils.toDouble(Optional.of(1));
     Optional<Double> testLongValue = ConversionUtils.toDouble(Optional.of(1234567890L));
     Optional<Double> testDoubleValue = ConversionUtils.toDouble(Optional.of(1.2));
@@ -81,7 +81,7 @@ public class ConversionUtilsTest {
   }
 
   @Test
-  public void testParseString() {
+  void testParseString() {
     assertNull(ConversionUtils.parseString(null));
 
     assertEquals(true, ConversionUtils.parseString("true"));

@@ -10,7 +10,23 @@ import java.util.Optional;
 
 public class TestProperties implements MutableProperties, ImmutableProperties {
 
-  private final Map<String, Object> properties = new HashMap<>();
+  private final Map<String, Object> properties;
+
+  public TestProperties() {
+    this(Map.of());
+  }
+
+  public TestProperties(String key, Object value) {
+    this(Map.of(key, value));
+  }
+
+  public TestProperties(String key1, Object value1, String key2, Object value2) {
+    this(Map.of(key1, value1, key2, value2));
+  }
+
+  public TestProperties(Map<String, Object> properties) {
+    this.properties = new HashMap<>(properties);
+  }
 
   @Override
   public void set(String key, Object value) {

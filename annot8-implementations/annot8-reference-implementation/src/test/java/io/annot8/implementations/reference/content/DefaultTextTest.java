@@ -8,15 +8,15 @@ import io.annot8.testing.testimpl.TestItem;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class DefaultTextTest {
+class DefaultTextTest {
 
-  public void testBuilderFactory() {
+  void testBuilderFactory() {
     DefaultText.BuilderFactory factory = new DefaultText.BuilderFactory();
     assertNotNull(factory.create(new TestItem()));
   }
 
   @Test
-  public void testBuilder() {
+  void testBuilder() {
     DefaultText.Builder builder = new DefaultText.Builder(new TestItem());
     DefaultText defaultText =
         builder.create(

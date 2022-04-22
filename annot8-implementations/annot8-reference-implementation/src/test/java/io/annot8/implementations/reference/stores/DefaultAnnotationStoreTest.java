@@ -8,15 +8,13 @@ import io.annot8.api.annotations.Annotation;
 import io.annot8.api.exceptions.IncompleteException;
 import io.annot8.api.stores.AnnotationStore;
 import io.annot8.common.data.bounds.NoBounds;
-import io.annot8.testing.testimpl.TestConstants;
 import io.annot8.testing.testimpl.content.TestStringContent;
 import org.junit.jupiter.api.Test;
 
-public class DefaultAnnotationStoreTest {
+class DefaultAnnotationStoreTest {
 
   @Test
-  public void testInMemoryAnnotationStore() throws IncompleteException {
-    String contentId = TestConstants.CONTENT_ID;
+  void testInMemoryAnnotationStore() throws IncompleteException {
     AnnotationStore store = new DefaultAnnotationStore(new TestStringContent());
 
     assertEquals(0, store.getAll().count());

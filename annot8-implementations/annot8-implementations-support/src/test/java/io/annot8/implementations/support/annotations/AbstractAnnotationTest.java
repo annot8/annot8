@@ -10,14 +10,12 @@ import java.util.Collections;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 
-public class AbstractAnnotationTest {
+class AbstractAnnotationTest {
 
   @Test
-  public void testBasicEquals() {
+  void testBasicEquals() {
     TestAnnotation annotation =
         new TestAnnotation("id", "type", "content", Collections.emptyMap(), null);
-    TestAnnotation different =
-        new TestAnnotation("diffId", "diffType", "diffContentName", Collections.emptyMap(), null);
 
     assertEquals(annotation, annotation);
     assertNotEquals(null, annotation);
@@ -25,7 +23,7 @@ public class AbstractAnnotationTest {
   }
 
   @Test
-  public void testEqualsWithFields() {
+  void testEqualsWithFields() {
     TestAnnotation annotation =
         new TestAnnotation("id", "type", "content", Collections.singletonMap("key", "value"), null);
     TestAnnotation same =

@@ -35,11 +35,16 @@ public class TestAnnotation implements Annotation {
   }
 
   public TestAnnotation(String id, String content, String type, Bounds bounds) {
+    this(id, content, type, bounds, new TestProperties());
+  }
+
+  public TestAnnotation(
+      String id, String content, String type, Bounds bounds, ImmutableProperties properties) {
     this.id = id;
     this.content = content;
     this.type = type;
     this.bounds = bounds;
-    this.properties = new TestProperties();
+    this.properties = properties;
   }
 
   @Override

@@ -10,10 +10,10 @@ import java.util.Map;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 
-public class MapMutablePropertiesTest {
+class MapMutablePropertiesTest {
 
   @Test
-  public void testMutableProperties() {
+  void testMutableProperties() {
     MutableProperties props = new MapMutableProperties();
 
     props.set("key1", "Hello World");

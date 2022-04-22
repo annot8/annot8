@@ -9,7 +9,7 @@ import io.annot8.api.helpers.WithId;
 import io.annot8.api.helpers.builders.WithIdBuilder;
 import io.annot8.api.helpers.builders.WithSave;
 
-public class WithIdBuilderTestUtils<T extends WithIdBuilder<T> & WithSave<WithId>> {
+public class WithIdBuilderTestUtils<B extends WithId, T extends WithIdBuilder<T> & WithSave<B>> {
 
   public void testWithIdBuilder(T builder) {
     WithId withId = null;

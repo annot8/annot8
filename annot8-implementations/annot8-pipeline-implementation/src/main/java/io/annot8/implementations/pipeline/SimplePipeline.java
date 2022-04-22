@@ -1,6 +1,7 @@
 /* Annot8 (annot8.io) - Licensed under Apache-2.0. */
 package io.annot8.implementations.pipeline;
 
+import io.annot8.api.components.Annot8Component;
 import io.annot8.api.components.Processor;
 import io.annot8.api.components.Resource;
 import io.annot8.api.components.Source;
@@ -21,6 +22,7 @@ import io.annot8.common.components.metering.Metering;
 import io.annot8.common.components.metering.Metrics;
 import io.annot8.common.components.metering.NoOpMetrics;
 import io.annot8.implementations.support.context.SimpleContext;
+import io.micrometer.core.instrument.Timer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -100,12 +102,9 @@ public class SimplePipeline implements Pipeline {
 
       if (source == null) continue;
 
-      logger.debug(
-          "[{}] Reading source {} [{}] for new items", getName(), source.toString(), sourceIndex);
+      logger.debug("[{}] Reading source {} [{}] for new items", getName(), source, sourceIndex);
       SourceResponse response =
-          metrics
-              .timer("source[" + sourceIndex + "].readTime", "class", source.getClass().getName())
-              .record(() -> source.read(itemFactory));
+          timer(sourceIndex, source, "readTime").record(() -> source.read(itemFactory));
 
       switch (response.getStatus()) {
         case EMPTY:
@@ -113,13 +112,11 @@ public class SimplePipeline implements Pipeline {
           continue;
         case DONE:
           // Record metrics, remove source, and then move on to the next source
-          metrics
-              .counter("source[" + sourceIndex + "].done", "class", source.getClass().getName())
-              .increment();
+          count(sourceIndex, source, "done");
           logger.info(
               "[{}] Finished reading all items from source {} [{}]",
               getName(),
-              source.toString(),
+              source,
               sourceIndex);
 
           remove(source);
@@ -127,24 +124,21 @@ public class SimplePipeline implements Pipeline {
           continue;
         case SOURCE_ERROR:
           // Record metrics, handle error
-          metrics
-              .counter(
-                  "source[" + sourceIndex + "].sourceError", "class", source.getClass().getName())
-              .increment();
+          count(sourceIndex, source, "sourceError");
 
           switch (errorConfiguration.getOnSourceError()) {
             case IGNORE:
               logger.error(
                   "[{}] Source {} [{}] returned an error, which has been ignored",
                   getName(),
-                  source.toString(),
+                  source,
                   sourceIndex);
               continue;
             case REMOVE_SOURCE:
               logger.error(
                   "[{}] Source {} [{}] returned an error and will be removed from the pipeline",
                   getName(),
-                  source.toString(),
+                  source,
                   sourceIndex);
               remove(source);
               break;
@@ -159,9 +153,7 @@ public class SimplePipeline implements Pipeline {
           break;
         case OK:
           // Record metrics
-          metrics
-              .counter("source[" + sourceIndex + "].ok", "class", source.getClass().getName())
-              .increment();
+          count(sourceIndex, source, "ok");
           break;
       }
 
@@ -186,25 +178,19 @@ public class SimplePipeline implements Pipeline {
           "[{}] Processing item {} using processor {} [{}]",
           getName(),
           item.getId(),
-          processor.toString(),
+          processor,
           idx);
 
-      response =
-          metrics
-              .timer(
-                  "processor[" + idx + "].processingTime", "class", processor.getClass().getName())
-              .record(() -> processor.process(item));
+      response = timer(idx, processor, "processingTime").record(() -> processor.process(item));
 
       if (response.getStatus() == ProcessorResponse.Status.ITEM_ERROR) {
-        metrics
-            .counter("processor[" + idx + "].itemError", "class", processor.getClass().getName())
-            .increment();
+        count(idx, processor, "itemError");
 
         if (errorConfiguration.getOnItemError() == ErrorConfiguration.OnProcessingError.IGNORE) {
           logger.error(
               "[{}] Processor {} [{}] returned an item error whilst processing the current item {}, which has been ignored",
               getName(),
-              processor.toString(),
+              processor,
               idx,
               item.getId());
         } else if (errorConfiguration.getOnItemError()
@@ -212,7 +198,7 @@ public class SimplePipeline implements Pipeline {
           logger.error(
               "[{}] Processor {} [{}] returned an item error whilst processing the current item {}, and the item will not be processed by the remainder of the pipeline",
               getName(),
-              processor.toString(),
+              processor,
               idx,
               item.getId());
           break;
@@ -221,7 +207,7 @@ public class SimplePipeline implements Pipeline {
           logger.error(
               "[{}] Processor {} [{}] returned an item error whilst processing the current item {}, and the processor will be removed from the pipeline",
               getName(),
-              processor.toString(),
+              processor,
               idx,
               item.getId());
           erroring.add(processor);
@@ -233,17 +219,14 @@ public class SimplePipeline implements Pipeline {
           }
         }
       } else if (response.getStatus() == ProcessorResponse.Status.PROCESSOR_ERROR) {
-        metrics
-            .counter(
-                "processor[" + idx + "].processorError", "class", processor.getClass().getName())
-            .increment();
+        count(idx, processor, "processorError");
 
         if (errorConfiguration.getOnProcessorError()
             == ErrorConfiguration.OnProcessingError.IGNORE) {
           logger.error(
               "[{}] Processor {} [{}] returned a processor error whilst processing the current item {}, which has been ignored",
               getName(),
-              processor.toString(),
+              processor,
               idx,
               item.getId());
         } else if (errorConfiguration.getOnProcessorError()
@@ -251,7 +234,7 @@ public class SimplePipeline implements Pipeline {
           logger.error(
               "[{}] Processor {} [{}] returned a processor error whilst processing the current item {}, and the item will not be processed by the remainder of the pipeline",
               getName(),
-              processor.toString(),
+              processor,
               idx,
               item.getId());
           break;
@@ -260,7 +243,7 @@ public class SimplePipeline implements Pipeline {
           logger.error(
               "[{}] Processor {} [{}] returned a processor error whilst processing the current item {}, and the processor will be removed from the pipeline",
               getName(),
-              processor.toString(),
+              processor,
               idx,
               item.getId());
           erroring.add(processor);
@@ -272,9 +255,7 @@ public class SimplePipeline implements Pipeline {
           }
         }
       } else {
-        metrics
-            .counter("processor[" + idx + "].ok", "class", processor.getClass().getName())
-            .increment();
+        count(idx, processor, "ok");
       }
 
       idx++;
@@ -301,6 +282,19 @@ public class SimplePipeline implements Pipeline {
     sources.stream().filter(Objects::nonNull).forEach(Source::close);
     processors.stream().filter(Objects::nonNull).forEach(Processor::close);
     context.getResources().filter(Objects::nonNull).forEach(Resource::close);
+  }
+
+  private Timer timer(int index, Annot8Component component, String type) {
+    String className = component.getClass().getName();
+    return metrics.timer(String.format("%s[%s].%s", className, index, type), "class", className);
+  }
+
+  private void count(int index, Annot8Component component, String type) {
+    String className = component.getClass().getName();
+    metrics
+        .counter(
+            String.format("%s[%s].%s", className, index, type).toLowerCase(), "class", className)
+        .increment();
   }
 
   public static class Builder implements Pipeline.Builder {
@@ -460,10 +454,6 @@ public class SimplePipeline implements Pipeline {
                 })
             .map(Processor.class::cast)
             .forEach(this::withProcessor);
-
-        if (name == null) {
-          name = descriptor.getName();
-        }
 
         if (description == null) {
           description = descriptor.getDescription();

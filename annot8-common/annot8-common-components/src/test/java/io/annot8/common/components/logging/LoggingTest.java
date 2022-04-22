@@ -11,16 +11,16 @@ import org.mockito.Mockito;
 import org.slf4j.ILoggerFactory;
 import org.slf4j.Logger;
 
-public class LoggingTest {
+class LoggingTest {
 
   @Test
-  public void testUseLoggerFactory() {
+  void testUseLoggerFactory() {
     Logger logger = Logging.useLoggerFactory().getLogger("test");
     assertNotNull(logger);
   }
 
   @Test
-  public void testUseILoggerFactory() {
+  void testUseILoggerFactory() {
     ILoggerFactory factory = Mockito.mock(ILoggerFactory.class);
     Logger logger = Mockito.mock(Logger.class);
     when(factory.getLogger(Mockito.anyString())).thenReturn(logger);
@@ -31,13 +31,13 @@ public class LoggingTest {
   }
 
   @Test
-  public void testNotAvailable() {
+  void testNotAvailable() {
     Logger logger = Logging.useILoggerFactory(null).getLogger("test");
     assertNotNull(logger);
   }
 
   @Test
-  public void testGetLogger() {
+  void testGetLogger() {
     Logger logger = Logging.useLoggerFactory().getLogger(LoggingTest.class);
     assertNotNull(logger);
   }

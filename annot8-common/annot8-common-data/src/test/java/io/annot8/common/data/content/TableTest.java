@@ -13,10 +13,10 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.mockito.stubbing.Answer;
 
-public class TableTest {
+class TableTest {
 
   @Test
-  public void testGetRow() {
+  void testGetRow() {
     Row row1 = getMockRow(1);
     Row row2 = getMockRow(2);
     Table table = Mockito.mock(Table.class);
@@ -32,7 +32,7 @@ public class TableTest {
   }
 
   @Test
-  public void testOutOfBoundsGetRow() {
+  void testOutOfBoundsGetRow() {
     Table table = Mockito.mock(Table.class);
     when(table.getRow(Mockito.anyInt())).thenCallRealMethod();
     Row row = getMockRow(1);
@@ -42,7 +42,7 @@ public class TableTest {
   }
 
   @Test
-  public void testGetRowNoRows() {
+  void testGetRowNoRows() {
     Table table = Mockito.mock(Table.class);
     when(table.getRow(Mockito.anyInt())).thenCallRealMethod();
     doAnswer(getRowsAnswer()).when(table).getRows();

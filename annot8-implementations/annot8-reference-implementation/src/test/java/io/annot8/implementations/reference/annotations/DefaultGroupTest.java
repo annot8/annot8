@@ -20,7 +20,7 @@ import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class DefaultGroupTest {
+class DefaultGroupTest {
 
   private TestItem item;
   private Annotation a1;
@@ -28,7 +28,7 @@ public class DefaultGroupTest {
   private Annotation a3;
 
   @BeforeEach
-  public void beforeEach() throws IncompleteException {
+  void beforeEach() throws IncompleteException {
     item = new TestItem();
     TestStringContent content = item.save(new TestStringContent(new TestItem()));
     a1 = content.getAnnotations().create().save();
@@ -37,24 +37,24 @@ public class DefaultGroupTest {
   }
 
   @Test
-  public void testIncompleteNothingSet() {
+  void testIncompleteNothingSet() {
     assertThrows(IncompleteException.class, new Builder(item)::save);
   }
 
   @Test
-  public void testIncompleteWithoutType() {
+  void testIncompleteWithoutType() {
     assertThrows(IncompleteException.class, new Builder(item).withAnnotation("source", a1)::save);
   }
 
   @Test
-  public void testNewHasId() throws IncompleteException {
+  void testNewHasId() throws IncompleteException {
     Group group = new Builder(item).withType(TestConstants.GROUP_TYPE).newId().save();
 
     assertNotNull(group.getId());
   }
 
   @Test
-  public void testSimpleGroup() throws IncompleteException {
+  void testSimpleGroup() throws IncompleteException {
     Group g1 =
         new DefaultGroup.Builder(item)
             .withType(TestConstants.GROUP_TYPE)
@@ -82,7 +82,7 @@ public class DefaultGroupTest {
   }
 
   @Test
-  public void testFromExisting() throws IncompleteException {
+  void testFromExisting() throws IncompleteException {
     Group g1 =
         new DefaultGroup.Builder(item)
             .withType(TestConstants.GROUP_TYPE)
@@ -106,7 +106,7 @@ public class DefaultGroupTest {
   }
 
   @Test
-  public void testFromExistingNoChange() throws IncompleteException {
+  void testFromExistingNoChange() throws IncompleteException {
     Group g1 =
         new DefaultGroup.Builder(item)
             .withType(TestConstants.GROUP_TYPE)
@@ -119,7 +119,7 @@ public class DefaultGroupTest {
   }
 
   @Test
-  public void testFromExistingNewId() throws IncompleteException {
+  void testFromExistingNewId() throws IncompleteException {
     Group g1 =
         new DefaultGroup.Builder(item)
             .withType(TestConstants.GROUP_TYPE)
@@ -132,13 +132,13 @@ public class DefaultGroupTest {
   }
 
   @Test
-  public void testProperties() {
+  void testProperties() {
     WithPropertiesBuilderTestUtils utils = new WithPropertiesBuilderTestUtils();
     utils.testWithPropertiesBuilder(new Builder(item).withType(TestConstants.GROUP_TYPE));
   }
 
   @Test
-  public void testWithId() {
+  void testWithId() {
     WithIdBuilderTestUtils utils = new WithIdBuilderTestUtils();
     utils.testWithIdBuilder(new Builder(item).withType(TestConstants.GROUP_TYPE));
   }

@@ -17,10 +17,10 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 
-public class AbstractGroupTest {
+class AbstractGroupTest {
 
   @Test
-  public void testBasicEquals() {
+  void testBasicEquals() {
     String groupId = "groupId";
     String groupType = "groupType";
     Group group = new TestGroup(groupId, groupType, Collections.emptyMap(), Collections.emptyMap());
@@ -34,7 +34,7 @@ public class AbstractGroupTest {
   }
 
   @Test
-  public void testEqualsWithProperties() {
+  void testEqualsWithProperties() {
     String groupId = "groupId";
     String groupType = "groupType";
     String key = "key";
@@ -57,7 +57,7 @@ public class AbstractGroupTest {
   }
 
   @Test
-  public void testEqualsWithReferences() {
+  void testEqualsWithReferences() {
     String groupId = "groupId";
     String groupType = "groupType";
     String annotationId = "annoId";

@@ -19,7 +19,7 @@ class DelegateItemTest {
   private DelegateItem item;
 
   @BeforeEach
-  public void beforeEach() {
+  void beforeEach() {
     item = new DelegateItem(delegate);
   }
 

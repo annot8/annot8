@@ -6,16 +6,17 @@ import static org.junit.jupiter.api.Assertions.*;
 import io.annot8.api.capabilities.GroupCapability;
 import org.junit.jupiter.api.Test;
 
-public class SimpleGroupCapabilityTest {
+class SimpleGroupCapabilityTest {
+
   @Test
-  public void testGetters() {
+  void testGetters() {
     GroupCapability gc = new SimpleGroupCapability("test");
 
     assertEquals("test", gc.getType());
   }
 
   @Test
-  public void testEqualAndHashCode() {
+  void testEqualAndHashCode() {
     GroupCapability gc1 = new SimpleGroupCapability("test");
     GroupCapability gc2 = new SimpleGroupCapability("test");
 

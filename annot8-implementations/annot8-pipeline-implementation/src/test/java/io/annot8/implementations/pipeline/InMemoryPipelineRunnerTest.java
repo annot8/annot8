@@ -26,10 +26,10 @@ import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Test;
 import org.mockito.stubbing.Answer;
 
-public class InMemoryPipelineRunnerTest {
+class InMemoryPipelineRunnerTest {
 
   @Test
-  public void test() {
+  void test() {
     ItemFactory itemFactory = mock(ItemFactory.class);
     when(itemFactory.create()).thenReturn(mock(Item.class));
 
@@ -125,7 +125,7 @@ public class InMemoryPipelineRunnerTest {
   }
 
   @Test
-  public void testOnThread() throws InterruptedException {
+  void testOnThread() throws InterruptedException {
     CountDownLatch countDownLatch = new CountDownLatch(2);
 
     ItemFactory itemFactory = mock(ItemFactory.class);
@@ -136,12 +136,7 @@ public class InMemoryPipelineRunnerTest {
         .thenAnswer(
             (Answer<SourceResponse>)
                 invocationOnMock -> {
-                  // Add delay
-                  try {
-                    Thread.sleep(100);
-                  } catch (Exception e) {
-                    e.printStackTrace();
-                  }
+                  addDelay();
                   invocationOnMock.getArgument(0, ItemFactory.class).create();
                   return SourceResponse.ok();
                 })
@@ -149,11 +144,7 @@ public class InMemoryPipelineRunnerTest {
             (Answer<SourceResponse>)
                 invocationOnMock -> {
                   // Add delay
-                  try {
-                    Thread.sleep(100);
-                  } catch (Exception e) {
-                    e.printStackTrace();
-                  }
+                  addDelay();
                   invocationOnMock.getArgument(0, ItemFactory.class).create();
                   return SourceResponse.ok();
                 })
@@ -211,5 +202,9 @@ public class InMemoryPipelineRunnerTest {
     runner.stop();
     assertFalse(runner.isRunning());
     countDownLatch.await(1000, TimeUnit.MILLISECONDS);
+  }
+
+  private void addDelay() throws InterruptedException {
+    new CountDownLatch(1).await(100, TimeUnit.MILLISECONDS);
   }
 }

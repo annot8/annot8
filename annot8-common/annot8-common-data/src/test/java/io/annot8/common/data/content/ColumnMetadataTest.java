@@ -6,12 +6,10 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import org.junit.jupiter.api.Test;
 
-public class ColumnMetadataTest {
+class ColumnMetadataTest {
 
-  @Test
-  public void testColumnMetadata() {
+  void testColumnMetadata() {
     String name = "name";
-    String type = "type";
     long size = 100;
     ColumnMetadata metadata = new ColumnMetadata(name, size);
     assertEquals(name, metadata.getName());
@@ -19,9 +17,8 @@ public class ColumnMetadataTest {
   }
 
   @Test
-  public void testEquals() {
+  void testEquals() {
     ColumnMetadata test = new ColumnMetadata("test", 1);
-    assertNotEquals(test, null);
     assertNotEquals(test, new Object());
     assertNotEquals(test, new ColumnMetadata("different", 2));
     ColumnMetadata equal = new ColumnMetadata("test", 1);

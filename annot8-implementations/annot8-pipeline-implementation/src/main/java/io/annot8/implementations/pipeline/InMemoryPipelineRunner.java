@@ -140,6 +140,7 @@ public class InMemoryPipelineRunner implements PipelineRunner {
           Thread.sleep(delay);
         } catch (InterruptedException e) {
           logger.debug("Sleep interrupted - {}", e.getMessage());
+          Thread.currentThread().interrupt();
         }
       }
     }
@@ -159,11 +160,13 @@ public class InMemoryPipelineRunner implements PipelineRunner {
         (pipelineFinished - startTime) / 1000.0);
   }
 
+  @Override
   public void stop() {
     logger.info("Stopping pipeline after current item/source");
     running.set(false);
   }
 
+  @Override
   public boolean isRunning() {
     return running.get();
   }

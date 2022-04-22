@@ -11,7 +11,7 @@ import io.annot8.testing.testimpl.TestConstants;
 import io.annot8.testing.testimpl.TestProperties;
 
 public class WithPropertiesBuilderTestUtils<
-    T extends WithPropertiesBuilder<T> & WithSave<WithProperties>> {
+    A extends WithProperties, T extends WithPropertiesBuilder<T> & WithSave<A>> {
 
   /**
    * Testing utility method to cover The save method of the provided WithPropertiesBuilder will be
