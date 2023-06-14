@@ -66,7 +66,7 @@
     <jsonapi.version>2.0.1</jsonapi.version>
     <jsonbindapi.version>2.0.0</jsonbindapi.version>
     <lombok.version>1.18.22</lombok.version>
-    <guava.version>31.0.1-jre</guava.version>
+    <guava.version>32.0.0-jre</guava.version>
     <slf4j.version>1.7.35</slf4j.version>
     <micrometer.version>1.8.2</micrometer.version>
     <classgraph.version>4.8.138</classgraph.version>
